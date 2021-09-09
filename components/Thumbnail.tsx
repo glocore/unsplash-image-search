@@ -1,6 +1,7 @@
 import { Box } from "@chakra-ui/layout";
 import { Image } from "@chakra-ui/react";
 import { Fade } from "@chakra-ui/react";
+import { css } from "@emotion/react";
 import { useState } from "react";
 import { Blurhash } from "react-blurhash";
 
@@ -8,7 +9,18 @@ export const Thumbnail = (props: ThumbnailProps) => {
   const [loaded, setLoaded] = useState(false);
 
   return (
-    <Box pos="relative" w={props.width} h={props.height}>
+    <Box
+      pos="relative"
+      w={props.width}
+      h={props.height}
+      transition="transform 0.2s"
+      cursor="pointer"
+      css={css`
+        &:hover {
+          transform: scale(1.05);
+        }
+      `}
+    >
       <Blurhash
         hash={props.blurhash}
         width="100%"
@@ -38,7 +50,7 @@ export const Thumbnail = (props: ThumbnailProps) => {
 export type ThumbnailProps = {
   blurhash: string;
   imageUrl: string;
-  width: number;
-  height: number;
+  width: string | number;
+  height: string | number;
   altDescription: string;
 };
