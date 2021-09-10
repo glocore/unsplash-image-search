@@ -3,7 +3,7 @@ import React, { ReactChild } from "react";
 
 export const ThumbnailGrid = (props: ThumbnailGridProps) => {
   return (
-    <SimpleGrid minChildWidth={250} gap={16}>
+    <SimpleGrid minChildWidth={300} gap={4}>
       {props.children}
     </SimpleGrid>
   );

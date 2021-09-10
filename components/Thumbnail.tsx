@@ -13,11 +13,13 @@ export const Thumbnail = (props: ThumbnailProps) => {
       pos="relative"
       w={props.width}
       h={props.height}
-      transition="transform 0.2s"
+      transition="all .2s"
       cursor="pointer"
       css={css`
         &:hover {
-          transform: scale(1.05);
+          transform: scale(1.02);
+          box-shadow: 0px 10px 10px -5px rgba(0, 0, 0, 0.04),
+            0px 20px 25px -5px rgba(0, 0, 0, 0.1);
         }
       `}
     >
@@ -39,6 +41,7 @@ export const Thumbnail = (props: ThumbnailProps) => {
           right={0}
           bottom={0}
           left={0}
+          objectFit="cover"
           pos="absolute"
           onLoad={() => setLoaded(true)}
         />
