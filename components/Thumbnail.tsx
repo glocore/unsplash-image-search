@@ -33,8 +33,6 @@ export const Thumbnail = (props: ThumbnailProps) => {
       />
       <Image
         src={props.imageUrl}
-        // width={props.width}
-        // height={props.height}
         alt={props.altDescription}
         quality={100}
         objectFit="cover"

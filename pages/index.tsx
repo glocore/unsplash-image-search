@@ -15,7 +15,7 @@ const Home: NextPage<{ initialCollection?: CollectionItem[] }> = ({
           {initialCollection?.map((collectionItem) => (
             <Thumbnail
               key={collectionItem.id}
-              imageUrl={collectionItem.urls.regular}
+              imageUrl={collectionItem.urls.small}
               blurhash={collectionItem.blur_hash}
               altDescription={collectionItem.alt_description}
               height={300}
@@ -35,7 +35,7 @@ type CollectionItem = {
   blur_hash: string;
   alt_description: string;
   urls: {
-    regular: string;
+    small: string;
   };
 };
 
@@ -43,7 +43,7 @@ export async function getStaticProps() {
   const headers = new Headers();
   headers.append(
     "Authorization",
-    "Client-ID FZpIl7feLseFHwV4DScQqiaVULO54C7GRBiqlmDrxdI"
+    "Client-ID " + process.env.NEXT_PUBLIC_UNSPLASH_API_KEY
   );
 
   const requestOptions = {
