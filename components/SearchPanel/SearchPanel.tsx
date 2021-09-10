@@ -15,6 +15,8 @@ import {
   MenuItemOption,
   MenuOptionGroup,
   UseMenuOptionGroupProps,
+  Wrap,
+  WrapItem,
 } from "@chakra-ui/react";
 import { ChangeEventHandler, useEffect, useState } from "react";
 import { FiFilter } from "react-icons/fi";
@@ -176,65 +178,72 @@ export const SearchPanel = ({ onChange }: SearchPanelProps) => {
       </InputGroup>
       <Collapse in={isFiltersPanelVisible} animateOpacity>
         <Box p={4} borderWidth="1px" borderRadius="md">
-          <HStack spacing={8}>
-            <HStack>
-              <label>Colors</label>
-              <ColorFilter
-                value={selectedColor}
-                onChange={handleColorSelection}
-              />
-            </HStack>
-            <Menu>
-              <Tooltip
-                label="Orientation"
-                placement="bottom"
-                bg="gray.200"
-                color="gray.800"
-                openDelay={400}
-              >
-                <MenuButton
-                  as={Button}
-                  h="2rem"
-                  borderRadius="sm"
-                  variant="outline"
-                  rightIcon={<FiChevronDown />}
-                  minWidth="176px"
-                >
-                  {orientationLabel[selectedOrientation]}
-                </MenuButton>
-              </Tooltip>
+          <Wrap spacing={8}>
+            <WrapItem>
+              <HStack>
+                <label>Colors</label>
+                <ColorFilter
+                  value={selectedColor}
+                  onChange={handleColorSelection}
+                />
+              </HStack>
+            </WrapItem>
 
-              <MenuList minWidth="240px">
-                <MenuOptionGroup
-                  value={selectedOrientation}
-                  onChange={handleOrientationSelection}
-                  type="radio"
+            <WrapItem>
+              <Menu>
+                <Tooltip
+                  label="Orientation"
+                  placement="bottom"
+                  bg="gray.200"
+                  color="gray.800"
+                  openDelay={400}
                 >
-                  <MenuItemOption value={orientation.any}>
-                    {orientationLabel[orientation.any]}
-                  </MenuItemOption>
-                  <MenuItemOption value={orientation.landscape}>
-                    {orientationLabel[orientation.landscape]}
-                  </MenuItemOption>
-                  <MenuItemOption value={orientation.portrait}>
-                    {orientationLabel[orientation.portrait]}
-                  </MenuItemOption>
-                  <MenuItemOption value={orientation.squarish}>
-                    {orientationLabel[orientation.squarish]}
-                  </MenuItemOption>
-                </MenuOptionGroup>
-              </MenuList>
-            </Menu>
-            <Button
-              onClick={clearFilters}
-              variant="ghost"
-              disabled={areFiltersPristine}
-              color="gray.600"
-              leftIcon={<FiX />}
-            >
-              Clear Filters
-            </Button>
-          </HStack>
+                  <MenuButton
+                    as={Button}
+                    borderRadius="sm"
+                    variant="outline"
+                    rightIcon={<FiChevronDown />}
+                    minWidth="176px"
+                  >
+                    {orientationLabel[selectedOrientation]}
+                  </MenuButton>
+                </Tooltip>
+
+                <MenuList minWidth="240px">
+                  <MenuOptionGroup
+                    value={selectedOrientation}
+                    onChange={handleOrientationSelection}
+                    type="radio"
+                  >
+                    <MenuItemOption value={orientation.any}>
+                      {orientationLabel[orientation.any]}
+                    </MenuItemOption>
+                    <MenuItemOption value={orientation.landscape}>
+                      {orientationLabel[orientation.landscape]}
+                    </MenuItemOption>
+                    <MenuItemOption value={orientation.portrait}>
+                      {orientationLabel[orientation.portrait]}
+                    </MenuItemOption>
+                    <MenuItemOption value={orientation.squarish}>
+                      {orientationLabel[orientation.squarish]}
+                    </MenuItemOption>
+                  </MenuOptionGroup>
+                </MenuList>
+              </Menu>
+            </WrapItem>
+
+            <WrapItem>
+              <Button
+                onClick={clearFilters}
+                variant="ghost"
+                disabled={areFiltersPristine}
+                color="gray.600"
+                leftIcon={<FiX />}
+              >
+                Clear Filters
+              </Button>
+            </WrapItem>
+          </Wrap>
         </Box>
       </Collapse>
     </Stack>
