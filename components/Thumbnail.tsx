@@ -34,9 +34,9 @@ export const Thumbnail = (props: ThumbnailProps) => {
       <Image
         src={props.imageUrl}
         alt={props.altDescription}
-        quality={100}
         objectFit="cover"
         layout="fill"
+        sizes="(max-width: 500px) 50vw 25vw"
         onLoadingComplete={() => setLoaded(true)}
         className={`${styles.thumbnailImage} ${
           loaded ? styles.thumbnailImageVisible : ""
