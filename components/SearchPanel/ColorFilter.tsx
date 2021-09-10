@@ -33,6 +33,7 @@ const RadioCard = (props: UseRadioProps & { children: ReactChild }) => {
       bg="gray.200"
       color="gray.800"
       isOpen={isFocused}
+      openDelay={400}
     >
       <Box
         as="label"

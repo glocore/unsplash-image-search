@@ -3,30 +3,49 @@ import {
   InputGroup,
   Stack,
   HStack,
-  Select,
   InputRightElement,
   Tooltip,
   IconButton,
   Collapse,
   Box,
   Button,
+  Menu,
+  MenuButton,
+  MenuList,
+  MenuItemOption,
+  MenuOptionGroup,
+  UseMenuOptionGroupProps,
 } from "@chakra-ui/react";
 import { ChangeEventHandler, useEffect, useState } from "react";
 import { FiFilter } from "react-icons/fi";
 import { BiSort } from "react-icons/bi";
 import { FiX } from "react-icons/fi";
+import { FiChevronDown } from "react-icons/fi";
 import { ColorFilter, color } from "./ColorFilter";
 
 const enum ordering {
-  relevance,
-  latest,
+  relevance = "relevance",
+  latest = "latest",
 }
+
+const orderingLabel = {
+  [ordering.relevance]: "Relevance",
+  [ordering.latest]: "Latest",
+};
+
 const enum orientation {
-  any,
-  landscape,
-  portrait,
-  squarish,
+  any = "any",
+  landscape = "landscape",
+  portrait = "portrait",
+  squarish = "squarish",
 }
+
+const orientationLabel = {
+  [orientation.any]: "Any Orientation",
+  [orientation.landscape]: "Landscape",
+  [orientation.portrait]: "Portrait",
+  [orientation.squarish]: "Square",
+};
 
 export const SearchPanel = ({ onChange }: SearchPanelProps) => {
   const [searchQuery, setSearchQuery] = useState("");
@@ -48,10 +67,10 @@ export const SearchPanel = ({ onChange }: SearchPanelProps) => {
     setIsFiltersPanelVisible(!isFiltersPanelVisible);
   };
 
-  const handleOrderingSelection: ChangeEventHandler<HTMLSelectElement> = (
-    event
+  const handleOrderingSelection: UseMenuOptionGroupProps["onChange"] = (
+    value
   ) => {
-    setSelectedOrdering(event.target.value as unknown as ordering);
+    setSelectedOrdering(value as ordering);
   };
 
   const handleColorSelection = (newValue: color) => {
@@ -59,10 +78,10 @@ export const SearchPanel = ({ onChange }: SearchPanelProps) => {
     setAreFiltersPristine(false);
   };
 
-  const handleOrientationSelection: ChangeEventHandler<HTMLSelectElement> = (
-    event
+  const handleOrientationSelection: UseMenuOptionGroupProps["onChange"] = (
+    value
   ) => {
-    setSelectedOrientation(event.target.value as unknown as orientation);
+    setSelectedOrientation(value as orientation);
     setAreFiltersPristine(false);
   };
 
@@ -93,36 +112,52 @@ export const SearchPanel = ({ onChange }: SearchPanelProps) => {
         <Input
           placeholder="Search Images"
           size="lg"
+          pr="200px"
           aria-label="Search Images"
           onChange={handleSearchQueryChange}
         />
-        <InputRightElement w="initial" right={2}>
+        <InputRightElement width="initial" right={2}>
           <HStack>
-            <Tooltip
-              label="Order By"
-              placement="bottom"
-              bg="gray.200"
-              color="gray.800"
-            >
-              <Select
-                h="2rem"
-                borderRadius="sm"
-                iconColor="gray.600"
-                cursor="pointer"
-                icon={<BiSort />}
-                value={selectedOrdering}
-                onChange={handleOrderingSelection}
-                aria-label="Sort Order"
+            <Menu>
+              <Tooltip
+                label="Order By"
+                placement="bottom"
+                bg="gray.200"
+                color="gray.800"
+                openDelay={400}
               >
-                <option value={ordering.relevance}>Relevance</option>
-                <option value={ordering.latest}>Latest</option>
-              </Select>
-            </Tooltip>
+                <MenuButton
+                  as={Button}
+                  h="2rem"
+                  borderRadius="sm"
+                  variant="outline"
+                  leftIcon={<BiSort />}
+                >
+                  {orderingLabel[selectedOrdering]}
+                </MenuButton>
+              </Tooltip>
+
+              <MenuList minWidth="240px">
+                <MenuOptionGroup
+                  value={selectedOrdering}
+                  onChange={handleOrderingSelection}
+                  type="radio"
+                >
+                  <MenuItemOption value={ordering.relevance}>
+                    {orderingLabel[ordering.relevance]}
+                  </MenuItemOption>
+                  <MenuItemOption value={ordering.latest}>
+                    {orderingLabel[ordering.latest]}
+                  </MenuItemOption>
+                </MenuOptionGroup>
+              </MenuList>
+            </Menu>
             <Tooltip
               label={isFiltersPanelVisible ? "Hide Filters" : "Show Filters"}
               placement="bottom-start"
               bg="gray.200"
               color="gray.800"
+              openDelay={400}
             >
               <IconButton
                 variant="outline"
@@ -149,27 +184,47 @@ export const SearchPanel = ({ onChange }: SearchPanelProps) => {
                 onChange={handleColorSelection}
               />
             </HStack>
-            <Tooltip
-              label="Orientation"
-              placement="bottom"
-              bg="gray.200"
-              color="gray.800"
-            >
-              <Select
-                borderRadius="sm"
-                iconColor="gray.600"
-                cursor="pointer"
-                width="initial"
-                value={selectedOrientation}
-                onChange={handleOrientationSelection}
-                aria-label="Orientation"
+            <Menu>
+              <Tooltip
+                label="Orientation"
+                placement="bottom"
+                bg="gray.200"
+                color="gray.800"
+                openDelay={400}
               >
-                <option value={orientation.any}>Any Orientation</option>
-                <option value={orientation.landscape}>Landscape</option>
-                <option value={orientation.portrait}>Portrait</option>
-                <option value={orientation.squarish}>Square</option>
-              </Select>
-            </Tooltip>
+                <MenuButton
+                  as={Button}
+                  h="2rem"
+                  borderRadius="sm"
+                  variant="outline"
+                  rightIcon={<FiChevronDown />}
+                  minWidth="176px"
+                >
+                  {orientationLabel[selectedOrientation]}
+                </MenuButton>
+              </Tooltip>
+
+              <MenuList minWidth="240px">
+                <MenuOptionGroup
+                  value={selectedOrientation}
+                  onChange={handleOrientationSelection}
+                  type="radio"
+                >
+                  <MenuItemOption value={orientation.any}>
+                    {orientationLabel[orientation.any]}
+                  </MenuItemOption>
+                  <MenuItemOption value={orientation.landscape}>
+                    {orientationLabel[orientation.landscape]}
+                  </MenuItemOption>
+                  <MenuItemOption value={orientation.portrait}>
+                    {orientationLabel[orientation.portrait]}
+                  </MenuItemOption>
+                  <MenuItemOption value={orientation.squarish}>
+                    {orientationLabel[orientation.squarish]}
+                  </MenuItemOption>
+                </MenuOptionGroup>
+              </MenuList>
+            </Menu>
             <Button
               onClick={clearFilters}
               variant="ghost"
