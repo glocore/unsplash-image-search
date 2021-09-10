@@ -9,7 +9,10 @@
     "lint": "next lint",
     "prepare": "husky install",
     "storybook": "start-storybook -p 6006",
-    "build-storybook": "build-storybook"
+    "build-storybook": "build-storybook",
+    "analyze": "cross-env ANALYZE=true next build",
+    "analyze:server": "cross-env BUNDLE_ANALYZE=server next build",
+    "analyze:browser": "cross-env BUNDLE_ANALYZE=browser next build"
   },
   "dependencies": {
     "@chakra-ui/react": "^1.6.7",
@@ -25,6 +28,7 @@
   },
   "devDependencies": {
     "@babel/core": "^7.15.5",
+    "@next/bundle-analyzer": "^11.1.2",
     "@snek-at/storybook-addon-chakra-ui": "^1.0.0-beta.1",
     "@storybook/addon-actions": "^6.3.8",
     "@storybook/addon-essentials": "^6.3.8",
@@ -32,6 +36,7 @@
     "@storybook/react": "^6.3.8",
     "@types/react": "17.0.20",
     "babel-loader": "^8.2.2",
+    "cross-env": "^7.0.3",
     "eslint": "7.32.0",
     "eslint-config-next": "11.1.2",
     "husky": ">=6",
