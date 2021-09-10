@@ -1,6 +1,6 @@
 import { Box } from "@chakra-ui/layout";
-import { Image } from "@chakra-ui/react";
-import { Fade } from "@chakra-ui/react";
+import Image from "next/image";
+import styles from "./Thumbnail.module.css";
 import { css } from "@emotion/react";
 import { useState } from "react";
 import { Blurhash } from "react-blurhash";
@@ -11,9 +11,9 @@ export const Thumbnail = (props: ThumbnailProps) => {
   return (
     <Box
       pos="relative"
+      transition="all .2s"
       w={props.width}
       h={props.height}
-      transition="all .2s"
       cursor="pointer"
       css={css`
         &:hover {
@@ -31,21 +31,19 @@ export const Thumbnail = (props: ThumbnailProps) => {
           position: "absolute",
         }}
       />
-      <Fade in={loaded}>
-        <Image
-          src={props.imageUrl}
-          width="100%"
-          height="100%"
-          alt={props.altDescription}
-          top={0}
-          right={0}
-          bottom={0}
-          left={0}
-          objectFit="cover"
-          pos="absolute"
-          onLoad={() => setLoaded(true)}
-        />
-      </Fade>
+      <Image
+        src={props.imageUrl}
+        width={props.width}
+        height={props.height}
+        alt={props.altDescription}
+        quality={100}
+        objectFit="cover"
+        layout="fill"
+        onLoadingComplete={() => setLoaded(true)}
+        className={`${styles.thumbnailImage} ${
+          loaded ? styles.thumbnailImageVisible : ""
+        }`}
+      />
     </Box>
   );
 };

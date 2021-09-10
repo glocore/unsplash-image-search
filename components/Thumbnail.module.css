@@ -1,0 +1,8 @@
+.thumbnailImage {
+  transition: all 0.2s;
+  opacity: 0;
+}
+
+.thumbnailImageVisible {
+  opacity: 1;
+}
