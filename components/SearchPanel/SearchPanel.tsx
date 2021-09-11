@@ -33,7 +33,7 @@ import { FiX } from "react-icons/fi";
 import { FiChevronDown } from "react-icons/fi";
 import { ColorFilter, color } from "./ColorFilter";
 
-const enum ordering {
+export const enum ordering {
   relevance = "relevance",
   latest = "latest",
 }
@@ -43,7 +43,7 @@ const orderingLabel = {
   [ordering.latest]: "Latest",
 };
 
-const enum orientation {
+export const enum orientation {
   any = "any",
   landscape = "landscape",
   portrait = "portrait",

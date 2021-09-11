@@ -8,6 +8,8 @@ export const ThumbnailGrid = (props: ThumbnailGridProps) => {
       ml="auto"
       pl={{ base: 2, md: 8 }}
       pr={{ base: 2, md: 8 }}
+      pt={150}
+      pb={100}
       minH="100vh"
       maxW="80em"
     >
