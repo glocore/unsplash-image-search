@@ -4,6 +4,7 @@ import {
   Stack,
   HStack,
   InputRightElement,
+  InputLeftElement,
   Tooltip,
   IconButton,
   Collapse,
@@ -17,8 +18,15 @@ import {
   UseMenuOptionGroupProps,
   Wrap,
   WrapItem,
+  Kbd,
 } from "@chakra-ui/react";
-import { ChangeEventHandler, useEffect, useState } from "react";
+import {
+  ChangeEventHandler,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import { FiFilter } from "react-icons/fi";
 import { BiSort } from "react-icons/bi";
 import { FiX } from "react-icons/fi";
@@ -108,145 +116,192 @@ export const SearchPanel = ({ onChange }: SearchPanelProps) => {
     setAreFiltersPristine(true);
   };
 
+  const searchInputRef = useRef<HTMLInputElement>(null);
+
+  const hotkeyListener = useCallback((e: KeyboardEvent) => {
+    if (e.key === "/") {
+      e.preventDefault();
+      searchInputRef?.current?.focus();
+      window.removeEventListener("keypress", hotkeyListener);
+    }
+  }, []);
+
+  useEffect(() => {
+    window.addEventListener("keypress", hotkeyListener);
+    return () => window.removeEventListener("keypress", hotkeyListener);
+  }, [hotkeyListener]);
+
+  const handleSearchInputFocus = () => {
+    window.removeEventListener("keypress", hotkeyListener);
+  };
+
+  const handleSearchInputBlur = () => {
+    window.addEventListener("keypress", hotkeyListener);
+  };
+
   return (
-    <Stack>
-      <InputGroup size="lg">
-        <Input
-          placeholder="Search Images"
-          size="lg"
-          pr="200px"
-          aria-label="Search Images"
-          onChange={handleSearchQueryChange}
-        />
-        <InputRightElement width="initial" right={2}>
-          <HStack>
-            <Menu>
-              <Tooltip
-                label="Order By"
-                placement="bottom"
-                bg="gray.200"
-                color="gray.800"
-                openDelay={400}
-              >
-                <MenuButton
-                  as={Button}
-                  h="2rem"
-                  borderRadius="sm"
-                  variant="outline"
-                  leftIcon={<BiSort />}
-                >
-                  {orderingLabel[selectedOrdering]}
-                </MenuButton>
-              </Tooltip>
-
-              <MenuList minWidth="240px">
-                <MenuOptionGroup
-                  value={selectedOrdering}
-                  onChange={handleOrderingSelection}
-                  type="radio"
-                >
-                  <MenuItemOption value={ordering.relevance}>
-                    {orderingLabel[ordering.relevance]}
-                  </MenuItemOption>
-                  <MenuItemOption value={ordering.latest}>
-                    {orderingLabel[ordering.latest]}
-                  </MenuItemOption>
-                </MenuOptionGroup>
-              </MenuList>
-            </Menu>
-            <Tooltip
-              label={isFiltersPanelVisible ? "Hide Filters" : "Show Filters"}
-              placement="bottom-start"
-              bg="gray.200"
-              color="gray.800"
-              openDelay={400}
-            >
-              <IconButton
-                variant="outline"
-                aria-label={
-                  isFiltersPanelVisible ? "Hide Filters" : "Show Filters"
-                }
-                h="2rem"
-                mr={-5}
-                icon={<FiFilter />}
-                borderRadius="sm"
-                onClick={toggleFiltersPanel}
-              />
-            </Tooltip>
-          </HStack>
-        </InputRightElement>
-      </InputGroup>
-      <Collapse in={isFiltersPanelVisible} animateOpacity>
-        <Box p={4} borderWidth="1px" borderRadius="md">
-          <Wrap spacing={8}>
-            <WrapItem>
-              <HStack>
-                <label>Colors</label>
-                <ColorFilter
-                  value={selectedColor}
-                  onChange={handleColorSelection}
-                />
-              </HStack>
-            </WrapItem>
-
-            <WrapItem>
+    <Box
+      pos="fixed"
+      top={0}
+      width="100%"
+      zIndex={1}
+      pt={2}
+      pb={2}
+      pl={{ base: 2, md: 8 }}
+      pr={{ base: 2, md: 8 }}
+      bg="white"
+    >
+      <Stack maxW="80rem" mr="auto" ml="auto">
+        <InputGroup size="lg">
+          <InputLeftElement width="initial" left={4}>
+            <Box display="inline-flex" alignItems="center" marginRight={8}>
+              <Kbd bg="gray.100" color="gray.400">
+                /
+              </Kbd>
+            </Box>
+          </InputLeftElement>
+          <Input
+            placeholder="Search Images"
+            size="lg"
+            pr="200px"
+            aria-label="Search Images"
+            ref={searchInputRef}
+            onChange={handleSearchQueryChange}
+            onFocus={handleSearchInputFocus}
+            onBlur={handleSearchInputBlur}
+          />
+          <InputRightElement width="initial" right={2}>
+            <HStack alignItems="center">
               <Menu>
                 <Tooltip
-                  label="Orientation"
+                  label="Order By"
                   placement="bottom"
                   bg="gray.200"
                   color="gray.800"
                   openDelay={400}
                 >
                   <MenuButton
+                    id="sort-order-1"
                     as={Button}
+                    h="2rem"
                     borderRadius="sm"
                     variant="outline"
-                    rightIcon={<FiChevronDown />}
-                    minWidth="176px"
+                    leftIcon={<BiSort />}
                   >
-                    {orientationLabel[selectedOrientation]}
+                    {orderingLabel[selectedOrdering]}
                   </MenuButton>
                 </Tooltip>
 
                 <MenuList minWidth="240px">
                   <MenuOptionGroup
-                    value={selectedOrientation}
-                    onChange={handleOrientationSelection}
+                    value={selectedOrdering}
+                    onChange={handleOrderingSelection}
                     type="radio"
                   >
-                    <MenuItemOption value={orientation.any}>
-                      {orientationLabel[orientation.any]}
+                    <MenuItemOption value={ordering.relevance}>
+                      {orderingLabel[ordering.relevance]}
                     </MenuItemOption>
-                    <MenuItemOption value={orientation.landscape}>
-                      {orientationLabel[orientation.landscape]}
-                    </MenuItemOption>
-                    <MenuItemOption value={orientation.portrait}>
-                      {orientationLabel[orientation.portrait]}
-                    </MenuItemOption>
-                    <MenuItemOption value={orientation.squarish}>
-                      {orientationLabel[orientation.squarish]}
+                    <MenuItemOption value={ordering.latest}>
+                      {orderingLabel[ordering.latest]}
                     </MenuItemOption>
                   </MenuOptionGroup>
                 </MenuList>
               </Menu>
-            </WrapItem>
-
-            <WrapItem>
-              <Button
-                onClick={clearFilters}
-                variant="ghost"
-                disabled={areFiltersPristine}
-                color="gray.600"
-                leftIcon={<FiX />}
+              <Tooltip
+                label={isFiltersPanelVisible ? "Hide Filters" : "Show Filters"}
+                placement="bottom-start"
+                bg="gray.200"
+                color="gray.800"
+                openDelay={400}
               >
-                Clear Filters
-              </Button>
-            </WrapItem>
-          </Wrap>
-        </Box>
-      </Collapse>
-    </Stack>
+                <IconButton
+                  variant="outline"
+                  aria-label={
+                    isFiltersPanelVisible ? "Hide Filters" : "Show Filters"
+                  }
+                  h="2rem"
+                  mr={-5}
+                  icon={<FiFilter />}
+                  borderRadius="sm"
+                  onClick={toggleFiltersPanel}
+                />
+              </Tooltip>
+            </HStack>
+          </InputRightElement>
+        </InputGroup>
+        <Collapse in={isFiltersPanelVisible} animateOpacity>
+          <Box p={4}>
+            <Wrap spacing={8}>
+              <WrapItem>
+                <HStack>
+                  <label>Colors</label>
+                  <ColorFilter
+                    value={selectedColor}
+                    onChange={handleColorSelection}
+                  />
+                </HStack>
+              </WrapItem>
+
+              <WrapItem>
+                <Menu>
+                  <Tooltip
+                    label="Orientation"
+                    placement="bottom"
+                    bg="gray.200"
+                    color="gray.800"
+                    openDelay={400}
+                  >
+                    <MenuButton
+                      id="orientation-1"
+                      as={Button}
+                      borderRadius="sm"
+                      variant="outline"
+                      rightIcon={<FiChevronDown />}
+                      minWidth="176px"
+                    >
+                      {orientationLabel[selectedOrientation]}
+                    </MenuButton>
+                  </Tooltip>
+
+                  <MenuList minWidth="240px">
+                    <MenuOptionGroup
+                      value={selectedOrientation}
+                      onChange={handleOrientationSelection}
+                      type="radio"
+                    >
+                      <MenuItemOption value={orientation.any}>
+                        {orientationLabel[orientation.any]}
+                      </MenuItemOption>
+                      <MenuItemOption value={orientation.landscape}>
+                        {orientationLabel[orientation.landscape]}
+                      </MenuItemOption>
+                      <MenuItemOption value={orientation.portrait}>
+                        {orientationLabel[orientation.portrait]}
+                      </MenuItemOption>
+                      <MenuItemOption value={orientation.squarish}>
+                        {orientationLabel[orientation.squarish]}
+                      </MenuItemOption>
+                    </MenuOptionGroup>
+                  </MenuList>
+                </Menu>
+              </WrapItem>
+
+              <WrapItem>
+                <Button
+                  onClick={clearFilters}
+                  variant="ghost"
+                  disabled={areFiltersPristine}
+                  color="gray.600"
+                  leftIcon={<FiX />}
+                >
+                  Clear Filters
+                </Button>
+              </WrapItem>
+            </Wrap>
+          </Box>
+        </Collapse>
+      </Stack>
+    </Box>
   );
 };
 

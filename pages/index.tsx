@@ -1,4 +1,3 @@
-import { Box } from "@chakra-ui/layout";
 import type { NextPage } from "next";
 import { SearchPanel } from "../components/SearchPanel/SearchPanel";
 import { Thumbnail } from "../components/Thumbnail";
@@ -8,7 +7,7 @@ const Home: NextPage<{ initialCollection?: CollectionItem[] }> = ({
   initialCollection,
 }) => {
   return (
-    <Box mr={8} ml={8} minH="100vh">
+    <>
       <SearchPanel onChange={console.log} />
       <ThumbnailGrid>
         <>
@@ -24,7 +23,7 @@ const Home: NextPage<{ initialCollection?: CollectionItem[] }> = ({
           ))}
         </>
       </ThumbnailGrid>
-    </Box>
+    </>
   );
 };
 
