@@ -32,6 +32,7 @@ import { BiSort } from "react-icons/bi";
 import { FiX } from "react-icons/fi";
 import { FiChevronDown } from "react-icons/fi";
 import { ColorFilter, color } from "./ColorFilter";
+import { useRouter } from "next/router";
 
 export const enum ordering {
   relevance = "relevance",
@@ -44,26 +45,26 @@ const orderingLabel = {
 };
 
 export const enum orientation {
-  any = "any",
+  all = "all",
   landscape = "landscape",
   portrait = "portrait",
   squarish = "squarish",
 }
 
 const orientationLabel = {
-  [orientation.any]: "Any Orientation",
+  [orientation.all]: "Any Orientation",
   [orientation.landscape]: "Landscape",
   [orientation.portrait]: "Portrait",
   [orientation.squarish]: "Square",
 };
 
-export const SearchPanel = ({ onChange }: SearchPanelProps) => {
+export const SearchPanel = (props: SearchPanelProps) => {
   const [searchQuery, setSearchQuery] = useState("");
-  const [isFiltersPanelVisible, setIsFiltersPanelVisible] = useState(true);
+  const [isFiltersPanelVisible, setIsFiltersPanelVisible] = useState(false);
   const [selectedOrdering, setSelectedOrdering] = useState(ordering.relevance);
   const [selectedColor, setSelectedColor] = useState(color.all);
   const [selectedOrientation, setSelectedOrientation] = useState(
-    orientation.any
+    orientation.all
   );
   const [areFiltersPristine, setAreFiltersPristine] = useState(true);
 
@@ -95,24 +96,27 @@ export const SearchPanel = ({ onChange }: SearchPanelProps) => {
     setAreFiltersPristine(false);
   };
 
+  const router = useRouter();
+
   useEffect(() => {
-    onChange({
-      searchQuery,
-      sortOrder: selectedOrdering,
-      color: selectedColor,
-      orientation: selectedOrientation,
-    });
-  }, [
-    onChange,
-    searchQuery,
-    selectedColor,
-    selectedOrdering,
-    selectedOrientation,
-  ]);
+    router.push(
+      {
+        query: {
+          query: searchQuery,
+          order: selectedOrdering,
+          orientation: selectedOrientation,
+          color: selectedColor,
+        },
+      },
+      undefined,
+      { shallow: true }
+    );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchQuery, selectedColor, selectedOrdering, selectedOrientation]);
 
   const clearFilters = () => {
     setSelectedColor(color.all);
-    setSelectedOrientation(orientation.any);
+    setSelectedOrientation(orientation.all);
     setAreFiltersPristine(true);
   };
 
@@ -269,8 +273,8 @@ export const SearchPanel = ({ onChange }: SearchPanelProps) => {
                       onChange={handleOrientationSelection}
                       type="radio"
                     >
-                      <MenuItemOption value={orientation.any}>
-                        {orientationLabel[orientation.any]}
+                      <MenuItemOption value={orientation.all}>
+                        {orientationLabel[orientation.all]}
                       </MenuItemOption>
                       <MenuItemOption value={orientation.landscape}>
                         {orientationLabel[orientation.landscape]}
@@ -306,10 +310,10 @@ export const SearchPanel = ({ onChange }: SearchPanelProps) => {
 };
 
 export type SearchPanelProps = {
-  onChange: (data: {
-    searchQuery: string;
-    sortOrder: ordering;
-    color: color;
-    orientation: orientation;
-  }) => void;
+  // onChange: (data: {
+  //   searchQuery: string;
+  //   sortOrder: ordering;
+  //   color: color;
+  //   orientation: orientation;
+  // }) => void;
 };
