@@ -1,6 +1,10 @@
+import { Box } from "@chakra-ui/layout";
+import { CircularProgress } from "@chakra-ui/progress";
 import debounce from "lodash-es/debounce";
 import type { NextPage } from "next";
+import { useRouter } from "next/router";
 import { useCallback, useEffect, useState } from "react";
+import { IntersectionObservable } from "../components/IntersectionObservable";
 import { color } from "../components/SearchPanel/ColorFilter";
 import {
   orientation,
@@ -8,26 +12,6 @@ import {
 } from "../components/SearchPanel/SearchPanel";
 import { Thumbnail } from "../components/Thumbnail";
 import { ThumbnailGrid } from "../components/ThumbnailGrid";
-import { IntersectionObservable } from "../components/IntersectionObservable";
-import { useRouter } from "next/router";
-import { CircularProgress } from "@chakra-ui/progress";
-import { Box } from "@chakra-ui/layout";
-
-const enum windowWidth {
-  base,
-  md,
-}
-
-const pageConfig = {
-  perPage: {
-    [windowWidth.base]: 7,
-    [windowWidth.md]: 15,
-  },
-  scrollThreshold: {
-    [windowWidth.base]: 2,
-    [windowWidth.md]: 3,
-  },
-};
 
 const makeRequest = async (path: string, params?: Record<string, string>) => {
   const headers = new Headers();
@@ -66,31 +50,6 @@ const Home: NextPage<{ initialCollection?: ImageData[] }> = ({
     }
   }, [initialCollection]);
 
-  const [currentWindowWidth, setCurrentWindowWidth] = useState<windowWidth>(
-    windowWidth.md
-  );
-
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  const handleWindowResize = useCallback(
-    debounce(() => {
-      console.log(window.innerWidth);
-      if (window.innerWidth > 650) {
-        setCurrentWindowWidth(windowWidth.md);
-      } else {
-        setCurrentWindowWidth(windowWidth.base);
-      }
-    }, 1000),
-    []
-  );
-
-  useEffect(() => {
-    handleWindowResize();
-    window.addEventListener("resize", handleWindowResize);
-
-    return () => window.removeEventListener("resize", handleWindowResize);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const handleSearchParametersChange = useCallback(
     debounce(async (data) => {
@@ -98,7 +57,7 @@ const Home: NextPage<{ initialCollection?: ImageData[] }> = ({
         const params: Record<string, string> = {
           query: data.query,
           order_by: data.order,
-          per_page: pageConfig.perPage[currentWindowWidth].toString(),
+          per_page: "15",
           page: data.page || "1",
         };
 
@@ -121,7 +80,7 @@ const Home: NextPage<{ initialCollection?: ImageData[] }> = ({
         }
       }
     }, 300),
-    [currentWindowWidth]
+    []
   );
 
   const router = useRouter();
@@ -173,10 +132,9 @@ const Home: NextPage<{ initialCollection?: ImageData[] }> = ({
         <>
           {results?.map((collectionItem, index) => (
             <div key={collectionItem.id}>
-              {index ===
-                results.length -
-                  pageConfig.scrollThreshold[currentWindowWidth] -
-                  1 && <IntersectionObservable onVisible={loadNextPage} />}
+              {index === results.length - 4 && (
+                <IntersectionObservable onVisible={loadNextPage} />
+              )}
 
               <Thumbnail
                 imageUrl={collectionItem.urls.small}
