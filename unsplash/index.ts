@@ -159,6 +159,7 @@ export type ImageData = {
   urls: {
     small: string;
     regular: string;
+    full: string;
   };
   links: {
     html: string;

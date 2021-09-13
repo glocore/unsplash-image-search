@@ -11,7 +11,7 @@ const Image = () => {
   const { imageData } = useUnsplashImage(id as string);
 
   return (
-    <Box w="100vw" h={{ base: "calc(100vh - 48px)", md: "calc(100vh - 72px)" }}>
+    <Box w="100%" h={{ base: "calc(100vh - 48px)", md: "calc(100vh - 72px)" }}>
       <Box
         maxW="80em"
         w="100%"
