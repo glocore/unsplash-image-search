@@ -8,10 +8,7 @@ import { useUnsplashImage } from "../../unsplash";
 const Image = () => {
   const router = useRouter();
   const { id } = router.query;
-  const { imageData, loading, error } = useUnsplashImage(id as string);
-
-  if (error) return <p>Oops, something went wrong!</p>;
-  if (loading) return <p>Loading...</p>;
+  const { imageData } = useUnsplashImage(id as string);
 
   return (
     <Box w="100vw" h={{ base: "calc(100vh - 48px)", md: "calc(100vh - 72px)" }}>
