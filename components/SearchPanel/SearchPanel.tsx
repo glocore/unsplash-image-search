@@ -1,25 +1,26 @@
 import {
-  Input,
-  InputGroup,
-  Stack,
-  HStack,
-  InputRightElement,
-  InputLeftElement,
-  Tooltip,
-  IconButton,
-  Collapse,
   Box,
   Button,
+  Collapse,
+  HStack,
+  IconButton,
+  Input,
+  InputGroup,
+  InputLeftElement,
+  InputRightElement,
+  Kbd,
   Menu,
   MenuButton,
-  MenuList,
   MenuItemOption,
+  MenuList,
   MenuOptionGroup,
+  Stack,
+  Tooltip,
   UseMenuOptionGroupProps,
   Wrap,
   WrapItem,
-  Kbd,
 } from "@chakra-ui/react";
+import { useRouter } from "next/router";
 import {
   ChangeEventHandler,
   useCallback,
@@ -27,24 +28,21 @@ import {
   useRef,
   useState,
 } from "react";
-import { FiFilter } from "react-icons/fi";
 import { BiSort } from "react-icons/bi";
-import { FiX } from "react-icons/fi";
-import { FiChevronDown } from "react-icons/fi";
-import { ColorFilter, color } from "./ColorFilter";
-import { useRouter } from "next/router";
+import { FiChevronDown, FiFilter, FiX } from "react-icons/fi";
+import { Color, ColorFilter } from "./ColorFilter";
 
-export const enum ordering {
+export const enum Ordering {
   relevance = "relevance",
   latest = "latest",
 }
 
 const orderingLabel = {
-  [ordering.relevance]: "Relevance",
-  [ordering.latest]: "Latest",
+  [Ordering.relevance]: "Relevance",
+  [Ordering.latest]: "Latest",
 };
 
-export const enum orientation {
+export const enum Orientation {
   all = "all",
   landscape = "landscape",
   portrait = "portrait",
@@ -52,19 +50,19 @@ export const enum orientation {
 }
 
 const orientationLabel = {
-  [orientation.all]: "Any Orientation",
-  [orientation.landscape]: "Landscape",
-  [orientation.portrait]: "Portrait",
-  [orientation.squarish]: "Square",
+  [Orientation.all]: "Any Orientation",
+  [Orientation.landscape]: "Landscape",
+  [Orientation.portrait]: "Portrait",
+  [Orientation.squarish]: "Square",
 };
 
 export const SearchPanel = (props: SearchPanelProps) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [isFiltersPanelVisible, setIsFiltersPanelVisible] = useState(false);
-  const [selectedOrdering, setSelectedOrdering] = useState(ordering.relevance);
-  const [selectedColor, setSelectedColor] = useState(color.all);
+  const [selectedOrdering, setSelectedOrdering] = useState(Ordering.relevance);
+  const [selectedColor, setSelectedColor] = useState(Color.all);
   const [selectedOrientation, setSelectedOrientation] = useState(
-    orientation.all
+    Orientation.all
   );
   const [areFiltersPristine, setAreFiltersPristine] = useState(true);
 
@@ -81,10 +79,10 @@ export const SearchPanel = (props: SearchPanelProps) => {
   const handleOrderingSelection: UseMenuOptionGroupProps["onChange"] = (
     value
   ) => {
-    setSelectedOrdering(value as ordering);
+    setSelectedOrdering(value as Ordering);
   };
 
-  const handleColorSelection = (newValue: color) => {
+  const handleColorSelection = (newValue: Color) => {
     setSelectedColor(newValue);
     setAreFiltersPristine(false);
   };
@@ -92,11 +90,19 @@ export const SearchPanel = (props: SearchPanelProps) => {
   const handleOrientationSelection: UseMenuOptionGroupProps["onChange"] = (
     value
   ) => {
-    setSelectedOrientation(value as orientation);
+    setSelectedOrientation(value as Orientation);
     setAreFiltersPristine(false);
   };
 
   const router = useRouter();
+
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const query = urlParams.get("query");
+    console.log({ query });
+    setSearchQuery((query as string) || "");
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   useEffect(() => {
     router.push(
@@ -115,8 +121,8 @@ export const SearchPanel = (props: SearchPanelProps) => {
   }, [searchQuery, selectedColor, selectedOrdering, selectedOrientation]);
 
   const clearFilters = () => {
-    setSelectedColor(color.all);
-    setSelectedOrientation(orientation.all);
+    setSelectedColor(Color.all);
+    setSelectedOrientation(Orientation.all);
     setAreFiltersPristine(true);
   };
 
@@ -170,6 +176,7 @@ export const SearchPanel = (props: SearchPanelProps) => {
             pr="200px"
             aria-label="Search Images"
             ref={searchInputRef}
+            value={searchQuery}
             onChange={handleSearchQueryChange}
             onFocus={handleSearchInputFocus}
             onBlur={handleSearchInputBlur}
@@ -202,11 +209,11 @@ export const SearchPanel = (props: SearchPanelProps) => {
                     onChange={handleOrderingSelection}
                     type="radio"
                   >
-                    <MenuItemOption value={ordering.relevance}>
-                      {orderingLabel[ordering.relevance]}
+                    <MenuItemOption value={Ordering.relevance}>
+                      {orderingLabel[Ordering.relevance]}
                     </MenuItemOption>
-                    <MenuItemOption value={ordering.latest}>
-                      {orderingLabel[ordering.latest]}
+                    <MenuItemOption value={Ordering.latest}>
+                      {orderingLabel[Ordering.latest]}
                     </MenuItemOption>
                   </MenuOptionGroup>
                 </MenuList>
@@ -273,17 +280,17 @@ export const SearchPanel = (props: SearchPanelProps) => {
                       onChange={handleOrientationSelection}
                       type="radio"
                     >
-                      <MenuItemOption value={orientation.all}>
-                        {orientationLabel[orientation.all]}
+                      <MenuItemOption value={Orientation.all}>
+                        {orientationLabel[Orientation.all]}
                       </MenuItemOption>
-                      <MenuItemOption value={orientation.landscape}>
-                        {orientationLabel[orientation.landscape]}
+                      <MenuItemOption value={Orientation.landscape}>
+                        {orientationLabel[Orientation.landscape]}
                       </MenuItemOption>
-                      <MenuItemOption value={orientation.portrait}>
-                        {orientationLabel[orientation.portrait]}
+                      <MenuItemOption value={Orientation.portrait}>
+                        {orientationLabel[Orientation.portrait]}
                       </MenuItemOption>
-                      <MenuItemOption value={orientation.squarish}>
-                        {orientationLabel[orientation.squarish]}
+                      <MenuItemOption value={Orientation.squarish}>
+                        {orientationLabel[Orientation.squarish]}
                       </MenuItemOption>
                     </MenuOptionGroup>
                   </MenuList>

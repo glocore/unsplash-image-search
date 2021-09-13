@@ -1,139 +1,31 @@
 import { Box } from "@chakra-ui/layout";
 import { CircularProgress } from "@chakra-ui/progress";
-import debounce from "lodash-es/debounce";
 import type { NextPage } from "next";
-import { useRouter } from "next/router";
-import { useCallback, useEffect, useState } from "react";
 import { IntersectionObservable } from "../components/IntersectionObservable";
-import { color } from "../components/SearchPanel/ColorFilter";
-import {
-  orientation,
-  SearchPanel,
-} from "../components/SearchPanel/SearchPanel";
+import { SearchPanel } from "../components/SearchPanel/SearchPanel";
 import { Thumbnail } from "../components/Thumbnail";
 import { ThumbnailGrid } from "../components/ThumbnailGrid";
-
-const makeRequest = async (path: string, params?: Record<string, string>) => {
-  const headers = new Headers();
-  headers.append(
-    "Authorization",
-    "Client-ID " + process.env.NEXT_PUBLIC_UNSPLASH_API_KEY
-  );
-
-  const url = new URL(`https://api.unsplash.com${path}`);
-  if (params) {
-    Object.keys(params).forEach((key) =>
-      url.searchParams.append(key, params[key].toString())
-    );
-  }
-
-  const requestOptions = {
-    method: "GET",
-    headers: headers,
-  };
-
-  // @ts-ignore
-  return fetch(url, requestOptions)
-    .then((response) => response.json())
-    .catch((error) => console.log("error", error));
-};
+import { unsplashApi, useUnsplashSearch } from "../unsplash";
 
 const Home: NextPage<{ initialCollection?: ImageData[] }> = ({
   initialCollection,
 }) => {
-  const [results, setResults] = useState<ImageData[]>([]);
-  const [totalPages, setTotalPages] = useState(1);
+  const { results, loadMore } = useUnsplashSearch({ pageSize: 15 });
 
-  useEffect(() => {
-    if (initialCollection) {
-      setResults(initialCollection);
-    }
-  }, [initialCollection]);
-
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  const handleSearchParametersChange = useCallback(
-    debounce(async (data) => {
-      if (data.query?.length > 2) {
-        const params: Record<string, string> = {
-          query: data.query,
-          order_by: data.order,
-          per_page: "15",
-          page: data.page || "1",
-        };
-
-        if (data.color !== color.all) {
-          params.color = data.color;
-        }
-        if (data.orientation !== orientation.all) {
-          params.orientation = data.orientation;
-        }
-
-        const jsonResponse: { total_pages: number; results: ImageData[] } =
-          await makeRequest("/search/photos", params);
-
-        setTotalPages(jsonResponse.total_pages);
-
-        if (data.shouldClearResults) {
-          setResults(jsonResponse.results);
-        } else {
-          setResults((prevResults) => prevResults.concat(jsonResponse.results));
-        }
-      }
-    }, 300),
-    []
-  );
-
-  const router = useRouter();
-
-  useEffect(() => {
-    const handleRouteChange = (url: string) => {
-      const urlSearchParams = new URLSearchParams(url.substring(1));
-      const queryParams = Object.fromEntries(urlSearchParams.entries());
-      const { query, order, color, orientation } = queryParams;
-
-      handleSearchParametersChange({
-        query,
-        order,
-        color,
-        orientation,
-        shouldClearResults: true,
-      });
-    };
-
-    router.events.on("routeChangeStart", handleRouteChange);
-
-    return () => {
-      router.events.off("routeChangeStart", handleRouteChange);
-    };
-  }, []);
-
-  const [currentPage, setCurrentPage] = useState(1);
-
-  const loadNextPage = () => {
-    if (currentPage >= totalPages) return;
-
-    const { query, order, color, orientation } = router.query;
-
-    setCurrentPage(currentPage + 1);
-
-    handleSearchParametersChange({
-      query,
-      order,
-      color,
-      orientation,
-      page: currentPage,
-    });
-  };
+  let images = initialCollection;
+  if (results && results.length) {
+    images = results;
+  }
 
   return (
     <>
       <SearchPanel />
       <ThumbnailGrid>
         <>
-          {results?.map((collectionItem, index) => (
+          {images?.map((collectionItem, index) => (
             <div key={collectionItem.id}>
               {index === results.length - 4 && (
-                <IntersectionObservable onVisible={loadNextPage} />
+                <IntersectionObservable onVisible={loadMore} />
               )}
 
               <Thumbnail
@@ -173,7 +65,7 @@ type ImageData = {
 };
 
 export async function getStaticProps() {
-  const responseJson = await makeRequest("/collections/2423569/photos", {
+  const responseJson = await unsplashApi("/collections/2423569/photos", {
     per_page: "15",
   });
   return {

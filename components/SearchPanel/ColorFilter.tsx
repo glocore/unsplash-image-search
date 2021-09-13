@@ -1,18 +1,18 @@
 import {
-  useRadio,
-  useRadioGroup,
-  Tooltip,
   Box,
   HStack,
+  Tooltip,
+  useRadio,
+  useRadioGroup,
   UseRadioProps,
 } from "@chakra-ui/react";
 import React, { ReactChild, useState } from "react";
 
-export const enum color {
+export const enum Color {
   all = "all",
   blackAndWhite = "black_and_white",
 }
-const options = [color.all, color.blackAndWhite];
+const options = [Color.all, Color.blackAndWhite];
 
 const RadioCard = (props: UseRadioProps & { children: ReactChild }) => {
   const { getInputProps, getCheckboxProps } = useRadio(props);
@@ -26,9 +26,9 @@ const RadioCard = (props: UseRadioProps & { children: ReactChild }) => {
       placement="bottom"
       label={
         {
-          [color.all]: "Any Color",
-          [color.blackAndWhite]: "Black and White",
-        }[props.value as color]
+          [Color.all]: "Any Color",
+          [Color.blackAndWhite]: "Black and White",
+        }[props.value as Color]
       }
       bg="gray.200"
       color="gray.800"
@@ -64,11 +64,11 @@ const RadioCard = (props: UseRadioProps & { children: ReactChild }) => {
             <Box
               bg={
                 {
-                  [color.all]:
+                  [Color.all]:
                     "linear-gradient(-135deg, #f8ff00 0%, #3ad59f 100%)",
-                  [color.blackAndWhite]:
+                  [Color.blackAndWhite]:
                     "linear-gradient(45deg, rgba(0,0,0,1) 0%, rgba(120,120,120,1) 50%, rgba(255,255,255,1) 100%)",
-                }[props.value as color]
+                }[props.value as Color]
               }
               h={7}
               w={7}
@@ -85,7 +85,7 @@ export const ColorFilter = ({ value, onChange }: ColorFilterProps) => {
   const { getRootProps, getRadioProps } = useRadioGroup({
     name: "framework",
     defaultValue: options[0],
-    onChange: (newValue) => onChange(newValue as color),
+    onChange: (newValue) => onChange(newValue as Color),
     value,
   });
 
@@ -106,6 +106,6 @@ export const ColorFilter = ({ value, onChange }: ColorFilterProps) => {
 };
 
 export type ColorFilterProps = {
-  value: color;
-  onChange: (newValue: color) => void;
+  value: Color;
+  onChange: (newValue: Color) => void;
 };
