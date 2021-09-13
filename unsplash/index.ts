@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { Color } from "../components/SearchPanel/ColorFilter";
 import { Ordering, Orientation } from "../components/SearchPanel/SearchPanel";
 
-export const unsplashApi = (
+export const unsplashApi = async (
   path: string,
   params?: Record<string, string | number>
 ) => {
@@ -26,7 +26,14 @@ export const unsplashApi = (
   };
 
   // @ts-ignore
-  return fetch(url, requestOptions).then((response) => response.json());
+  const response = await fetch(url, requestOptions);
+  const responseJson = await response.json();
+
+  if (response.status !== 200) {
+    throw Error(responseJson);
+  }
+
+  return responseJson;
 };
 
 export const useUnsplashSearch = ({
@@ -111,11 +118,52 @@ export const useUnsplashSearch = ({
   };
 };
 
-type ImageData = {
+export const useUnsplashImage = (
+  id: string
+): { loading: boolean; error: boolean; imageData?: ImageData } => {
+  const [imageData, setImageData] = useState<ImageData | undefined>();
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(false);
+
+  useEffect(() => {
+    const fetchImageData = async () => {
+      setLoading(true);
+
+      try {
+        const responseJson = await unsplashApi(`/photos/${id}`);
+        setImageData(responseJson);
+      } catch (error) {
+        setError(true);
+        console.error(error);
+      }
+
+      setLoading(false);
+    };
+
+    if (typeof id === "string" && id.length) {
+      fetchImageData();
+    }
+  }, [id]);
+
+  return { imageData, loading, error };
+};
+
+export type ImageData = {
   id: string;
   blur_hash: string;
+  description: string;
   alt_description: string;
+  width: number;
+  height: number;
+  created_at: string;
   urls: {
     small: string;
+    regular: string;
+  };
+  links: {
+    html: string;
+  };
+  user: {
+    name: string;
   };
 };
