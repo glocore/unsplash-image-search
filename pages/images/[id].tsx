@@ -11,7 +11,7 @@ import { RequestStatus, useUnsplashImage } from "../../unsplash";
 const Loading = () => (
   <Box
     w="100%"
-    h="50vh"
+    h="80%"
     display="flex"
     alignItems="center"
     justifyContent="center"

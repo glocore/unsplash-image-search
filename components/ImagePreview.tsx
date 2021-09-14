@@ -1,6 +1,6 @@
 import { Button, IconButton } from "@chakra-ui/button";
 import { Box, Divider, Link, Text } from "@chakra-ui/layout";
-import { CircularProgress, Image, Tooltip } from "@chakra-ui/react";
+import { Image, Tooltip } from "@chakra-ui/react";
 import { format } from "date-fns";
 import { useState } from "react";
 import {
@@ -11,20 +11,7 @@ import {
   FiUser,
 } from "react-icons/fi";
 import { ImageData } from "../unsplash";
-
-const Loading = () => {
-  return (
-    <Box
-      w="100%"
-      h="50vh"
-      display="flex"
-      alignItems="center"
-      justifyContent="center"
-    >
-      <CircularProgress isIndeterminate />
-    </Box>
-  );
-};
+import { darken, lighten } from "../utils";
 
 export const ImagePreview = ({ imageData }: ImagePreviewProps) => {
   const [imageLoaded, setImageLoaded] = useState(false);
@@ -51,20 +38,33 @@ export const ImagePreview = ({ imageData }: ImagePreviewProps) => {
       <>
         <Box w="100%">
           <Box display="flex" justifyContent="center">
-            {!imageLoaded && (
-              <Box w="100%" pt={`min(80vh, ${aspectRatioPercentage}%)`} />
-            )}
-            <Image
-              src={imageData.urls.regular}
-              alt={imageData.alt_description || imageData.description}
-              maxH="80vh"
-              opacity={imageLoaded ? 1 : 0}
-              transition="all 0.3s"
-              onLoad={() => setImageLoaded(true)}
-            />
+            <Box
+              pos="relative"
+              w="100%"
+              pt={`min(80vh, ${aspectRatioPercentage}%)`}
+            >
+              <Box
+                pos="absolute"
+                top={0}
+                right={0}
+                bottom={0}
+                left={0}
+                display="flex"
+                justifyContent="center"
+              >
+                <Image
+                  src={imageData.urls.regular}
+                  alt={imageData.alt_description || imageData.description}
+                  h="100%"
+                  opacity={imageLoaded ? 1 : 0}
+                  transition="all 0.3s"
+                  onLoad={() => setImageLoaded(true)}
+                />
+              </Box>
+            </Box>
           </Box>
           <Box pt="2em" display="flex" w="100%" justifyContent="space-between">
-            <Text fontSize="xl" flex="1">
+            <Text fontSize="xl" flex="1" color={darken(imageData.color)}>
               {imageData.description || imageData.alt_description}
             </Text>
             <Button
@@ -73,6 +73,8 @@ export const ImagePreview = ({ imageData }: ImagePreviewProps) => {
               href={imageData.links.html}
               isExternal
               marginInlineStart={2}
+              bgColor={lighten(imageData.color)}
+              color={darken(imageData.color)}
             >
               Unsplash
             </Button>

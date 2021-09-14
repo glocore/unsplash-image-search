@@ -161,8 +161,6 @@ export const useUnsplashImage = (id: string) => {
   useEffect(() => {
     if (typeof id === "string" && id.length) {
       fetchImageData();
-    } else {
-      setStatus(RequestStatus.error);
     }
   }, [fetchImageData, id]);
 
@@ -176,6 +174,7 @@ export type ImageData = {
   alt_description: string;
   width: number;
   height: number;
+  color: string;
   created_at: string;
   urls: {
     small: string;
