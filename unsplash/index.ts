@@ -1,7 +1,12 @@
-import { useRouter } from "next/router";
-import { useEffect, useState } from "react";
-import { Color } from "../components/SearchPanel/ColorFilter";
-import { Ordering, Orientation } from "../components/SearchPanel/SearchPanel";
+import { useCallback, useEffect, useState } from "react";
+import { Color } from "../components/ColorFilter";
+import { Orientation } from "../components/SearchPanel";
+
+export const enum RequestStatus {
+  idle,
+  loading,
+  error,
+}
 
 export const unsplashApi = async (
   path: string,
@@ -37,82 +42,82 @@ export const unsplashApi = async (
 };
 
 export const useUnsplashSearch = ({
-  pageSize = 15,
+  query,
+  pageSize,
+  order,
+  color,
+  orientation,
 }: {
-  pageSize?: number;
-}): {
-  results: ImageData[];
-  loadMore: () => void;
-} => {
+  query: string;
+  pageSize: number;
+  order: string;
+  color: string;
+  orientation: string;
+}) => {
   const [results, setResults] = useState<ImageData[]>([]);
-  const [currentPage, setCurrentPage] = useState(0);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [status, setStatus] = useState<RequestStatus>(RequestStatus.idle);
 
-  const router = useRouter();
-  const { query, order, orientation, color } = router.query as {
-    query: string;
-    orientation: Orientation;
-    color: Color;
-    order: Ordering;
-  };
+  const fetchResults = useCallback(
+    async (page: number) => {
+      if (query.length < 3) return;
 
-  const fetchNextPage = async () => {
-    const nextPage = currentPage + 1;
-    setCurrentPage(nextPage);
-
-    const params: Record<string, string | number> = {
-      page: nextPage,
-      pageSize,
-      query,
-      order,
-    };
-
-    if (color !== Color.all) {
-      params.color = color;
-    }
-
-    if (orientation !== Orientation.all) {
-      params.orientation = orientation;
-    }
-
-    const responseJson = await unsplashApi("/search/photos", params);
-
-    setResults((oldResults) => oldResults.concat(responseJson.results));
-  };
-
-  useEffect(() => {
-    const resetResults = async () => {
-      if (!query || query?.length < 3) return;
-
-      const nextPage = 1;
-      setCurrentPage(nextPage);
-
-      const params: Record<string, string | number> = {
-        page: nextPage,
-        pageSize,
-        query,
+      const reqParams: Record<string, string | number> = {
+        query: query.trim(),
+        page_size: pageSize,
         order,
+        page,
       };
 
       if (color !== Color.all) {
-        params.color = color;
+        reqParams.color = color;
       }
 
       if (orientation !== Orientation.all) {
-        params.orientation = orientation;
+        reqParams.orientation = orientation;
       }
 
-      const responseJson = await unsplashApi("/search/photos", params);
+      setStatus(RequestStatus.loading);
 
-      setResults(responseJson.results);
+      let results = [];
+
+      try {
+        const responseJson = await unsplashApi("/search/photos", reqParams);
+
+        results = responseJson?.results;
+        setStatus(RequestStatus.idle);
+      } catch (error) {
+        setStatus(RequestStatus.error);
+      }
+
+      return results;
+    },
+    [color, order, orientation, pageSize, query]
+  );
+
+  const loadMore = async () => {
+    const nextPage = currentPage + 1;
+    setCurrentPage(nextPage);
+
+    const results = await fetchResults(nextPage);
+    setResults((oldResults) => (oldResults || []).concat(results || []));
+  };
+
+  // Fetch new results when query changes
+  useEffect(() => {
+    const resetResults = async () => {
+      const page = 1;
+      setCurrentPage(page);
+      const results = await fetchResults(page);
+
+      setResults(results);
     };
 
     resetResults();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [color, order, orientation, query]);
-
-  const loadMore = fetchNextPage;
+  }, [fetchResults]);
 
   return {
+    status,
     results,
     loadMore,
   };

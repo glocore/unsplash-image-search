@@ -1,6 +1,4 @@
-import { useRouter } from "next/router";
-import React, { Fragment, useRef, useEffect } from "react";
-
+import React, { useEffect, useRef } from "react";
 import { useIntersectionObserver } from "../utils";
 
 export const IntersectionObservable = ({

@@ -14,29 +14,57 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import { useState } from "react";
 import { FiX } from "react-icons/fi";
+import { Header } from "../components/Header";
 import { ImagePreview } from "../components/ImagePreview";
 import { IntersectionObservable } from "../components/IntersectionObservable";
-import { SearchPanel } from "../components/SearchPanel/SearchPanel";
+import {
+  Color,
+  Order,
+  Orientation,
+  SearchPanel,
+  SearchParams,
+} from "../components/SearchPanel";
 import { Thumbnail } from "../components/Thumbnail";
 import { ThumbnailGrid } from "../components/ThumbnailGrid";
 import { ImageData, unsplashApi, useUnsplashSearch } from "../unsplash";
 const Home: NextPage<{ initialCollection?: ImageData[] }> = ({
   initialCollection,
 }) => {
-  const { results, loadMore } = useUnsplashSearch({ pageSize: 15 });
+  const [selectedImageData, setSelectedImageData] = useState<ImageData>();
+  const [searchParams, setSearchParams] = useState<SearchParams>({
+    query: "",
+    color: Color.all,
+    order: Order.relevance,
+    orientation: Orientation.all,
+  });
 
-  let images = initialCollection;
+  const router = useRouter();
+
+  const { results, loadMore } = useUnsplashSearch({
+    pageSize: 15,
+    ...searchParams,
+  });
+
+  let images = initialCollection || [];
   if (results && results.length) {
     images = results;
   }
 
-  const router = useRouter();
-
-  const [selectedImageData, setSelectedImageData] = useState<ImageData>();
+  const handleSearchParamsChange = (
+    updaterFn: (oldValue: SearchParams) => SearchParams
+  ) => {
+    const newValue = updaterFn(searchParams);
+    setSearchParams(newValue);
+  };
 
   return (
     <>
-      <SearchPanel />
+      <Header>
+        <SearchPanel
+          searchParams={searchParams}
+          onChange={handleSearchParamsChange}
+        />
+      </Header>
       <ThumbnailGrid>
         <>
           {images?.map((collectionItem, index) => (
@@ -48,7 +76,7 @@ const Home: NextPage<{ initialCollection?: ImageData[] }> = ({
               shallow
             >
               <div onClick={() => setSelectedImageData(collectionItem)}>
-                {index === results.length - 4 && (
+                {index === images.length - 4 && (
                   <IntersectionObservable onVisible={loadMore} />
                 )}
 

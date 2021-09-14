@@ -43,7 +43,6 @@ export const ImagePreview = ({ imageData }: ImagePreviewProps) => {
       w="100%"
       mr="auto"
       ml="auto"
-      // pt={{ base: 2, md: 8 }}
       pl={{ base: 2, md: 8 }}
       pr={{ base: 2, md: 8 }}
       flexDirection="column"
@@ -59,7 +58,7 @@ export const ImagePreview = ({ imageData }: ImagePreviewProps) => {
                 <Box w="100%" pt={`min(80vh, ${aspectRatioPercentage}%)`} />
               )}
               <Image
-                src={imageData.urls.full}
+                src={imageData.urls.regular}
                 alt={imageData.alt_description || imageData.description}
                 maxH="80vh"
                 opacity={imageLoaded ? 1 : 0}

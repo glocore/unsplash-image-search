@@ -1,4 +1,12 @@
-import { RefObject, useEffect, useState } from "react";
+import { isEqual } from "lodash";
+import {
+  DependencyList,
+  EffectCallback,
+  RefObject,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 
 interface Args extends IntersectionObserverInit {
   freezeOnceVisible?: boolean;
@@ -38,4 +46,29 @@ export const useIntersectionObserver = (
   }, [elementRef, threshold, root, rootMargin, frozen]);
 
   return entry;
+};
+
+/**
+ * Does a deep comparison of object dependencies
+ * instead of referential equality.
+ */
+export const useDeeplyComparedEffect = (
+  callback: EffectCallback,
+  dependencies: DependencyList | undefined
+) => {
+  const useDeepCompareMemoize = (value: any) => {
+    const ref = useRef();
+
+    if (!isEqual(value, ref.current)) {
+      ref.current = value;
+    }
+
+    return ref.current;
+  };
+
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  return useEffect(
+    callback,
+    dependencies?.map(useDeepCompareMemoize) as typeof dependencies
+  );
 };
