@@ -8,12 +8,14 @@ import {
   ModalContent,
   ModalHeader,
   ModalOverlay,
+  Text,
 } from "@chakra-ui/react";
 import type { NextPage } from "next";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { useState } from "react";
+import React, { useState } from "react";
 import { FiX } from "react-icons/fi";
+import { IoRefreshOutline } from "react-icons/io5";
 import { Header } from "../components/Header";
 import { ImagePreview } from "../components/ImagePreview";
 import { IntersectionObservable } from "../components/IntersectionObservable";
@@ -26,7 +28,12 @@ import {
 } from "../components/SearchPanel";
 import { Thumbnail } from "../components/Thumbnail";
 import { ThumbnailGrid } from "../components/ThumbnailGrid";
-import { ImageData, unsplashApi, useUnsplashSearch } from "../unsplash";
+import {
+  ImageData,
+  RequestStatus,
+  unsplashApi,
+  useUnsplashSearch,
+} from "../unsplash";
 const Home: NextPage<{ initialCollection?: ImageData[] }> = ({
   initialCollection,
 }) => {
@@ -40,14 +47,19 @@ const Home: NextPage<{ initialCollection?: ImageData[] }> = ({
 
   const router = useRouter();
 
-  const { results, loadMore } = useUnsplashSearch({
+  const { status, results, loadMore, retry } = useUnsplashSearch({
     pageSize: 15,
     ...searchParams,
   });
 
-  let images = initialCollection || [];
+  let images: ImageData[] = [];
+
   if (results && results.length) {
     images = results;
+  } else if (status === RequestStatus.error) {
+    images = [];
+  } else {
+    images = initialCollection || [];
   }
 
   const handleSearchParamsChange = (
@@ -65,6 +77,7 @@ const Home: NextPage<{ initialCollection?: ImageData[] }> = ({
           onChange={handleSearchParamsChange}
         />
       </Header>
+
       <ThumbnailGrid>
         <>
           {images?.map((collectionItem, index) => (
@@ -93,16 +106,40 @@ const Home: NextPage<{ initialCollection?: ImageData[] }> = ({
         </>
       </ThumbnailGrid>
 
-      <Box
-        w="100%"
-        pt={10}
-        pb="30em"
-        display="flex"
-        alignItems="center"
-        justifyContent="center"
-      >
-        <CircularProgress isIndeterminate />
-      </Box>
+      {status === RequestStatus.loading && (
+        <Box
+          w="100%"
+          pt={10}
+          pb="30em"
+          display="flex"
+          alignItems="center"
+          justifyContent="center"
+        >
+          <CircularProgress isIndeterminate />
+        </Box>
+      )}
+
+      {status === RequestStatus.error && (
+        <Box
+          w="100%"
+          pt={10}
+          pb="30em"
+          display="flex"
+          alignItems="center"
+          justifyContent="center"
+          flexDir="column"
+        >
+          <Text mb={2} fontSize="xl" color="gray.500">
+            Something went wrong, try again?
+          </Text>
+          <IconButton
+            icon={<IoRefreshOutline />}
+            aria-label="Reload"
+            borderRadius="50%"
+            onClick={retry}
+          />
+        </Box>
+      )}
       <Modal
         onClose={() => router.push("/", undefined, { shallow: true })}
         size="full"
@@ -132,7 +169,7 @@ const Home: NextPage<{ initialCollection?: ImageData[] }> = ({
             </Box>
           </ModalHeader>
           <ModalBody pl={0} pr={0} pt={0} h="100%">
-            <ImagePreview imageData={selectedImageData} />
+            <ImagePreview imageData={selectedImageData!} />
           </ModalBody>
         </ModalContent>
       </Modal>

@@ -103,6 +103,11 @@ export const useUnsplashSearch = ({
     setResults((oldResults) => (oldResults || []).concat(results || []));
   };
 
+  const retry = async () => {
+    const results = await fetchResults(currentPage);
+    setResults((oldResults) => (oldResults || []).concat(results || []));
+  };
+
   // Fetch new results when query changes
   useEffect(() => {
     const resetResults = async () => {
@@ -120,37 +125,37 @@ export const useUnsplashSearch = ({
     status,
     results,
     loadMore,
+    retry,
   };
 };
 
-export const useUnsplashImage = (
-  id: string
-): { loading: boolean; error: boolean; imageData?: ImageData } => {
+export const useUnsplashImage = (id: string) => {
   const [imageData, setImageData] = useState<ImageData | undefined>();
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(false);
+  const [status, setStatus] = useState(RequestStatus.loading);
 
-  useEffect(() => {
-    const fetchImageData = async () => {
-      setLoading(true);
+  const fetchImageData = useCallback(async () => {
+    setStatus(RequestStatus.loading);
 
-      try {
-        const responseJson = await unsplashApi(`/photos/${id}`);
-        setImageData(responseJson);
-      } catch (error) {
-        setError(true);
-        console.error(error);
-      }
-
-      setLoading(false);
-    };
-
-    if (typeof id === "string" && id.length) {
-      fetchImageData();
+    try {
+      const responseJson = await unsplashApi(`/photos/${id}`);
+      setImageData(responseJson);
+    } catch (error) {
+      setStatus(RequestStatus.error);
+      console.error(error);
     }
+
+    setStatus(RequestStatus.idle);
   }, [id]);
 
-  return { imageData, loading, error };
+  useEffect(() => {
+    if (typeof id === "string" && id.length) {
+      fetchImageData();
+    } else {
+      setStatus(RequestStatus.error);
+    }
+  }, [fetchImageData, id]);
+
+  return { imageData, status, retry: fetchImageData };
 };
 
 export type ImageData = {
