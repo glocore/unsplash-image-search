@@ -81,6 +81,7 @@ export const SearchPanel = ({ searchParams, onChange }: SearchPanelProps) => {
   }, [hotkeyListener]);
 
   const handleSearchInputFocus = () => {
+    searchInputRef?.current?.select();
     window.removeEventListener("keypress", hotkeyListener);
   };
 

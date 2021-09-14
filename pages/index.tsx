@@ -120,8 +120,6 @@ const Home: NextPage<{ initialCollection?: ImageData[] }> = ({
     setSearchParams(newValue);
   };
 
-  console.log("pageStatus: ", pageStatus);
-
   return (
     <>
       <Header>
@@ -235,7 +233,7 @@ const Home: NextPage<{ initialCollection?: ImageData[] }> = ({
         scrollBehavior="inside"
       >
         <ModalOverlay />
-        <ModalContent minH="95vh" bottom="-5vh">
+        <ModalContent minH="95vh" h="100%" bottom="-5vh">
           <ModalHeader w="100%" pt={0} pl={0} pr={0} pb={{ base: 4, md: 10 }}>
             <Box
               maxW="80rem"
