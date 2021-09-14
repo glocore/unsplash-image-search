@@ -54,13 +54,17 @@ export const useUnsplashSearch = ({
   color: string;
   orientation: string;
 }) => {
-  const [results, setResults] = useState<ImageData[]>([]);
+  const [results, setResults] = useState<ImageData[] | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [status, setStatus] = useState<RequestStatus>(RequestStatus.idle);
 
   const fetchResults = useCallback(
     async (page: number) => {
-      if (query.length < 3) return;
+      if (query.length < 3) {
+        setResults(null);
+        setStatus(RequestStatus.idle);
+        return;
+      }
 
       const reqParams: Record<string, string | number> = {
         query: query.trim(),
@@ -79,7 +83,7 @@ export const useUnsplashSearch = ({
 
       setStatus(RequestStatus.loading);
 
-      let results = [];
+      let results = null;
 
       try {
         const responseJson = await unsplashApi("/search/photos", reqParams);
@@ -105,7 +109,9 @@ export const useUnsplashSearch = ({
 
   const retry = async () => {
     const results = await fetchResults(currentPage);
-    setResults((oldResults) => (oldResults || []).concat(results || []));
+    setResults((oldResults) =>
+      oldResults ? oldResults.concat(results || []) : results
+    );
   };
 
   // Fetch new results when query changes
@@ -125,6 +131,8 @@ export const useUnsplashSearch = ({
 
     resetResults();
   }, [fetchResults]);
+
+  console.log("requestStatus: ", status);
 
   return {
     status,

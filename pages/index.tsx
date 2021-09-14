@@ -13,12 +13,14 @@ import {
 import type { NextPage } from "next";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { FiX } from "react-icons/fi";
 import { IoRefreshOutline } from "react-icons/io5";
+import { Fade } from "../components/Fade";
 import { Header } from "../components/Header";
 import { ImagePreview } from "../components/ImagePreview";
 import { IntersectionObservable } from "../components/IntersectionObservable";
+import { NoResultsFound } from "../components/NoResultsFound";
 import {
   Color,
   Order,
@@ -34,8 +36,32 @@ import {
   unsplashApi,
   useUnsplashSearch,
 } from "../unsplash";
+
+const enum PageStatus {
+  /**
+   * Search yet to be performed / search query was reset.
+   */
+  initial,
+  /**
+   * No more search results.
+   */
+  idle,
+  /**
+   * Loading more search results.
+   */
+  loading,
+  /**
+   * There was an error fetching search results.
+   */
+  error,
+  /**
+   * Search returned no results.
+   */
+  noResultsFound,
+}
+
 const Home: NextPage<{ initialCollection?: ImageData[] }> = ({
-  initialCollection,
+  initialCollection = [],
 }) => {
   const [selectedImageData, setSelectedImageData] = useState<ImageData>();
   const [searchParams, setSearchParams] = useState<SearchParams>({
@@ -44,23 +70,48 @@ const Home: NextPage<{ initialCollection?: ImageData[] }> = ({
     order: Order.relevance,
     orientation: Orientation.all,
   });
+  const [pageStatus, setPageStatus] = useState<PageStatus>(PageStatus.initial);
 
   const router = useRouter();
 
-  const { status, results, loadMore, retry } = useUnsplashSearch({
+  const {
+    status: searchStatus,
+    results,
+    loadMore,
+    retry,
+  } = useUnsplashSearch({
     pageSize: 15,
     ...searchParams,
   });
 
-  let images: ImageData[] = [];
+  useEffect(() => {
+    if (searchStatus === RequestStatus.error) {
+      // There was an error in fetching search results
+      setPageStatus(PageStatus.error);
+    } else if (results) {
+      // Search was performed
 
-  if (results && results.length) {
-    images = results;
-  } else if (status === RequestStatus.error) {
-    images = [];
-  } else {
-    images = initialCollection || [];
-  }
+      if (results.length < 1) {
+        // Search returned no results
+        setPageStatus(PageStatus.noResultsFound);
+      } else {
+        setPageStatus(
+          {
+            [RequestStatus.idle]: PageStatus.idle,
+            [RequestStatus.loading]: PageStatus.loading,
+            [RequestStatus.error]: PageStatus.error,
+          }[searchStatus]
+        );
+      }
+    } else {
+      if (searchStatus === RequestStatus.loading) {
+        setPageStatus(PageStatus.loading);
+      } else {
+        // Search is yet to begin (or) search term was reset
+        setPageStatus(PageStatus.initial);
+      }
+    }
+  }, [initialCollection, results, searchStatus]);
 
   const handleSearchParamsChange = (
     updaterFn: (oldValue: SearchParams) => SearchParams
@@ -68,6 +119,8 @@ const Home: NextPage<{ initialCollection?: ImageData[] }> = ({
     const newValue = updaterFn(searchParams);
     setSearchParams(newValue);
   };
+
+  console.log("pageStatus: ", pageStatus);
 
   return (
     <>
@@ -77,69 +130,104 @@ const Home: NextPage<{ initialCollection?: ImageData[] }> = ({
           onChange={handleSearchParamsChange}
         />
       </Header>
+      {pageStatus === PageStatus.noResultsFound && <NoResultsFound />}
 
-      <ThumbnailGrid>
-        <>
-          {images?.map((collectionItem, index) => (
-            <Link
-              key={collectionItem.id}
-              href={`/?id=${collectionItem.id}`}
-              as={`/images/${collectionItem.id}`}
-              passHref
-              shallow
-            >
-              <div onClick={() => setSelectedImageData(collectionItem)}>
-                {index === images.length - 4 && (
-                  <IntersectionObservable onVisible={loadMore} />
-                )}
-
-                <Thumbnail
-                  imageUrl={collectionItem.urls.small}
-                  blurhash={collectionItem.blur_hash}
-                  altDescription={collectionItem.alt_description}
-                  height={300}
-                  width="100%"
-                />
-              </div>
-            </Link>
-          ))}
-        </>
-      </ThumbnailGrid>
-
-      {status === RequestStatus.loading && (
-        <Box
-          w="100%"
-          pt={10}
-          pb="30em"
-          display="flex"
-          alignItems="center"
-          justifyContent="center"
-        >
-          <CircularProgress isIndeterminate />
-        </Box>
+      {pageStatus === PageStatus.initial && (
+        <ThumbnailGrid>
+          <>
+            {initialCollection.map((imageData) => (
+              <Link
+                key={imageData.id}
+                href={`/?id=${imageData.id}`}
+                as={`/images/${imageData.id}`}
+                passHref
+                shallow
+              >
+                <div onClick={() => setSelectedImageData(imageData)}>
+                  <Thumbnail
+                    imageUrl={imageData.urls.small}
+                    blurhash={imageData.blur_hash}
+                    altDescription={imageData.alt_description}
+                    height={300}
+                    width="100%"
+                  />
+                </div>
+              </Link>
+            ))}
+          </>
+        </ThumbnailGrid>
       )}
 
-      {status === RequestStatus.error && (
-        <Box
-          w="100%"
-          pt={10}
-          pb="30em"
-          display="flex"
-          alignItems="center"
-          justifyContent="center"
-          flexDir="column"
-        >
-          <Text mb={2} fontSize="xl" color="gray.500">
-            Something went wrong, try again?
-          </Text>
-          <IconButton
-            icon={<IoRefreshOutline />}
-            aria-label="Reload"
-            borderRadius="50%"
-            onClick={retry}
-          />
-        </Box>
+      {pageStatus !== PageStatus.initial &&
+        pageStatus !== PageStatus.noResultsFound && (
+          <ThumbnailGrid>
+            <>
+              {results?.map((imageData, index) => (
+                <Link
+                  key={imageData.id}
+                  href={`/?id=${imageData.id}`}
+                  as={`/images/${imageData.id}`}
+                  passHref
+                  shallow
+                >
+                  <div onClick={() => setSelectedImageData(imageData)}>
+                    {index === results!.length - 7 && (
+                      <IntersectionObservable onVisible={loadMore} />
+                    )}
+
+                    <Thumbnail
+                      imageUrl={imageData.urls.small}
+                      blurhash={imageData.blur_hash}
+                      altDescription={imageData.alt_description}
+                      height={300}
+                      width="100%"
+                    />
+                  </div>
+                </Link>
+              ))}
+            </>
+          </ThumbnailGrid>
+        )}
+
+      {pageStatus === PageStatus.loading && (
+        <Fade>
+          <Box
+            w="100%"
+            pt={10}
+            pb="30em"
+            display="flex"
+            alignItems="center"
+            justifyContent="center"
+          >
+            <CircularProgress isIndeterminate />
+          </Box>
+        </Fade>
       )}
+
+      {pageStatus === PageStatus.error && (
+        <Fade>
+          <Box
+            w="100%"
+            pt={10}
+            pb="30em"
+            display="flex"
+            alignItems="center"
+            justifyContent="center"
+            flexDir="column"
+          >
+            <Text mb={2} fontSize="xl" color="gray.500">
+              Something went wrong, try again?
+            </Text>
+            <IconButton
+              icon={<IoRefreshOutline />}
+              aria-label="Reload"
+              borderRadius="50%"
+              onClick={retry}
+            />
+          </Box>
+        </Fade>
+      )}
+
       <Modal
         onClose={() => router.push("/", undefined, { shallow: true })}
         size="full"
@@ -181,7 +269,7 @@ export default Home;
 
 export async function getStaticProps() {
   const responseJson = await unsplashApi("/collections/2423569/photos", {
-    per_page: "15",
+    per_page: "30",
   });
   return {
     props: {
