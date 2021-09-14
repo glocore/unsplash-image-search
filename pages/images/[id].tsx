@@ -12,15 +12,7 @@ const Image = () => {
 
   return (
     <Box w="100%" h={{ base: "calc(100vh - 48px)", md: "calc(100vh - 72px)" }}>
-      <Box
-        maxW="80em"
-        w="100%"
-        mr="auto"
-        ml="auto"
-        pt={{ base: 2, md: 8 }}
-        pl={{ base: 2, md: 8 }}
-        pr={{ base: 2, md: 8 }}
-      >
+      <Box maxW="80rem" w="100%" mr="auto" ml="auto" p={{ base: 2, md: 8 }}>
         <Button leftIcon={<FiArrowLeft />} as={Link} href={"/"}>
           Home
         </Button>

@@ -150,18 +150,14 @@ export const SearchPanel = (props: SearchPanelProps) => {
   };
 
   return (
-    <Box
-      pos="fixed"
-      top={0}
-      width="100%"
-      zIndex={1}
-      pt={2}
-      pb={2}
-      pl={{ base: 2, md: 8 }}
-      pr={{ base: 2, md: 8 }}
-      bg="white"
-    >
-      <Stack maxW="80rem" mr="auto" ml="auto">
+    <Box pos="fixed" top={0} width="100%" zIndex={1} pt={2} pb={2} bg="white">
+      <Stack
+        maxW="80rem"
+        mr="auto"
+        ml="auto"
+        pl={{ base: 2, md: 8 }}
+        pr={{ base: 2, md: 8 }}
+      >
         <InputGroup size="lg">
           <InputLeftElement width="initial" left={4}>
             <Box display="inline-flex" alignItems="center" marginRight={8}>

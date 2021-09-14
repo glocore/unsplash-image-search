@@ -39,11 +39,11 @@ export const ImagePreview = ({ imageData }: ImagePreviewProps) => {
     <Box
       display="flex"
       minH="100%"
-      maxW="80em"
+      maxW="80rem"
       w="100%"
       mr="auto"
       ml="auto"
-      pt={{ base: 2, md: 8 }}
+      // pt={{ base: 2, md: 8 }}
       pl={{ base: 2, md: 8 }}
       pr={{ base: 2, md: 8 }}
       flexDirection="column"
