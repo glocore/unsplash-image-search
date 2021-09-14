@@ -47,8 +47,6 @@ const Image = () => {
   const { id } = router.query;
   const { imageData, status, retry } = useUnsplashImage(id as string);
 
-  console.log({ status });
-
   return (
     <Box
       w="100%"
@@ -61,7 +59,9 @@ const Image = () => {
       </Box>
       {status === RequestStatus.loading && <Loading />}
       {status === RequestStatus.error && <ErrorUI onRetryClick={retry} />}
-      {status === RequestStatus.idle && <ImagePreview imageData={imageData!} />}
+      {status === RequestStatus.idle && imageData && (
+        <ImagePreview imageData={imageData} />
+      )}
     </Box>
   );
 };

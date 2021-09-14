@@ -132,8 +132,6 @@ export const useUnsplashSearch = ({
     resetResults();
   }, [fetchResults]);
 
-  console.log("requestStatus: ", status);
-
   return {
     status,
     results,
