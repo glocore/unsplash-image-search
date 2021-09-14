@@ -116,6 +116,11 @@ export const useUnsplashSearch = ({
       const results = await fetchResults(page);
 
       setResults(results);
+
+      window.scrollTo({
+        top: 0,
+        behavior: "smooth",
+      });
     };
 
     resetResults();
