@@ -12,7 +12,11 @@ export const ThumbnailGrid = (props: ThumbnailGridProps) => {
       pb={100}
       maxW="80em"
     >
-      <SimpleGrid minChildWidth={300} gap={4} overflow="hidden">
+      <SimpleGrid
+        columns={{ sm: 1, md: 2, lg: 3 }}
+        spacing={4}
+        overflow="hidden"
+      >
         {props.children}
       </SimpleGrid>
     </Box>

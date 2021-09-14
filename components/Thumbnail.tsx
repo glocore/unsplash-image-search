@@ -1,6 +1,4 @@
-import { Box } from "@chakra-ui/layout";
-import Image from "next/image";
-import styles from "./Thumbnail.module.css";
+import { Box, Image } from "@chakra-ui/react";
 import { css } from "@emotion/react";
 import { useState } from "react";
 import { Blurhash } from "react-blurhash";
@@ -35,12 +33,13 @@ export const Thumbnail = (props: ThumbnailProps) => {
         src={props.imageUrl}
         alt={props.altDescription}
         objectFit="cover"
-        layout="fill"
-        sizes="(max-width: 500px) 50vw 25vw"
-        onLoadingComplete={() => setLoaded(true)}
-        className={`${styles.thumbnailImage} ${
-          loaded ? styles.thumbnailImageVisible : ""
-        }`}
+        onLoad={() => setLoaded(true)}
+        opacity={loaded ? 1 : 0}
+        transition="opacity .3s"
+        position="absolute"
+        h="100%"
+        w="100%"
+        top={0}
       />
     </Box>
   );
