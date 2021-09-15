@@ -30,6 +30,7 @@ import {
   SearchPanel,
   SearchParams,
 } from "../components/SearchPanel";
+import { SkipToContent } from "../components/SkipToContent";
 import { Thumbnail } from "../components/Thumbnail";
 import { ThumbnailGrid } from "../components/ThumbnailGrid";
 import {
@@ -184,31 +185,16 @@ const Home: NextPage<{ initialCollection?: ImageData[] }> = ({
 
   return (
     <>
-      <ChakraLink
-        tabIndex={0}
-        position="absolute"
-        transform="translateY(-150%)"
-        p={4}
-        left={4}
-        top={4}
-        bgColor="white"
-        borderColor="blue.500"
-        borderWidth="2px"
-        borderStyle="solid"
-        borderRadius={8}
+      <SkipToContent
         onKeyPress={(event) => {
           if (event.key === "Enter") {
             firstThumbnailRef.current?.focus();
           }
         }}
-        transition="transform 0.1s"
-        zIndex={5}
-        _focus={{
-          transform: `translateY(0%)`,
-        }}
       >
         Skip to content
-      </ChakraLink>
+      </SkipToContent>
+
       <Header
         pos={shouldFloatHeader ? "fixed" : "initial"}
         shadow={shouldFloatHeader ? "md" : undefined}
