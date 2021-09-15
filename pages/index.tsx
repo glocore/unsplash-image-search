@@ -19,7 +19,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { FiX } from "react-icons/fi";
 import { IoRefreshOutline } from "react-icons/io5";
 import { Fade } from "../components/Fade";
-import { Header } from "../components/Header";
+import { Header, useHeader } from "../components/Header";
 import { ImagePreview } from "../components/ImagePreview";
 import { IntersectionObservable } from "../components/IntersectionObservable";
 import { NoResultsFound } from "../components/NoResultsFound";
@@ -160,28 +160,17 @@ const Home: NextPage<{ initialCollection?: ImageData[] }> = ({
   }, []);
 
   const headerRef = useRef<HTMLDivElement>(null);
-  const [shouldFloatHeader, setShouldFloatHeader] = useState(false);
-
-  useEffect(() => {
-    const handleScroll = () => {
-      if (window.pageYOffset > 0) {
-        if (shouldFloatHeader) {
-          // do nothing
-        } else {
-          setShouldFloatHeader(true);
-        }
-      } else {
-        setShouldFloatHeader(false);
-      }
-    };
-
-    window.addEventListener("scroll", handleScroll);
-
-    return () => window.removeEventListener("scroll", handleScroll);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
   const firstThumbnailRef = useRef<HTMLAnchorElement>(null);
+
+  const { isHeaderFloating } = useHeader();
+
+  const renderNoResultsFound = pageStatus === PageStatus.noResultsFound;
+  const renderInitialCollection = pageStatus === PageStatus.initial;
+  const renderLoading = pageStatus === PageStatus.loading;
+  const renderError = pageStatus === PageStatus.error;
+  const renderSearchResults =
+    pageStatus !== PageStatus.initial &&
+    pageStatus !== PageStatus.noResultsFound;
 
   return (
     <>
@@ -194,22 +183,18 @@ const Home: NextPage<{ initialCollection?: ImageData[] }> = ({
       >
         Skip to content
       </SkipToContent>
-
-      <Header
-        pos={shouldFloatHeader ? "fixed" : "initial"}
-        shadow={shouldFloatHeader ? "md" : undefined}
-        ref={headerRef}
-      >
+      {/* @ts-ignore */}
+      <Header ref={headerRef} float={isHeaderFloating}>
         <SearchPanel
           searchParams={searchParams}
           onChange={handleSearchParamsChange}
           disabled={isOffline}
         />
       </Header>
-      {pageStatus === PageStatus.noResultsFound && <NoResultsFound />}
-      {pageStatus === PageStatus.initial && (
+      {renderNoResultsFound && <NoResultsFound />}
+      {renderInitialCollection && (
         <ThumbnailGrid
-          pt={shouldFloatHeader ? `${headerRef?.current?.clientHeight}px` : 0}
+          pt={isHeaderFloating ? `${headerRef?.current?.clientHeight}px` : 0}
         >
           <>
             {initialCollection.map((imageData, index) => (
@@ -258,63 +243,62 @@ const Home: NextPage<{ initialCollection?: ImageData[] }> = ({
         </ThumbnailGrid>
       )}
 
-      {pageStatus !== PageStatus.initial &&
-        pageStatus !== PageStatus.noResultsFound && (
-          <ThumbnailGrid
-            pt={shouldFloatHeader ? `${headerRef?.current?.clientHeight}px` : 0}
-          >
-            <>
-              {results?.map((imageData, index) => (
-                <Link
-                  key={imageData.id}
-                  href={`/?id=${imageData.id}`}
-                  as={`/images/${imageData.id}`}
-                  passHref
-                  shallow
-                >
-                  <ChakraLink
-                    tabIndex={0}
-                    onClick={() => setSelectedImageData(imageData)}
-                    role="gridcell"
-                    transition="all .2s"
-                    cursor="pointer"
-                    ref={index > 0 ? undefined : firstThumbnailRef}
-                    _focus={{
-                      transform: "scale(0.95)",
-                      outlineColor: "blue.600",
-                      outlineStyle: "solid",
-                      outlineWidth: "2px",
-                      outlineOffset: "5px",
-                    }}
-                    _active={{
-                      transform: "scale(0.98)",
-                    }}
-                    _hover={{
-                      transform: "scale(1.02)",
-                      boxShadow:
-                        "0px 10px 10px -5px rgba(0, 0, 0, 0.04),\
+      {renderSearchResults && (
+        <ThumbnailGrid
+          pt={isHeaderFloating ? `${headerRef?.current?.clientHeight}px` : 0}
+        >
+          <>
+            {results?.map((imageData, index) => (
+              <Link
+                key={imageData.id}
+                href={`/?id=${imageData.id}`}
+                as={`/images/${imageData.id}`}
+                passHref
+                shallow
+              >
+                <ChakraLink
+                  tabIndex={0}
+                  onClick={() => setSelectedImageData(imageData)}
+                  role="gridcell"
+                  transition="all .2s"
+                  cursor="pointer"
+                  ref={index > 0 ? undefined : firstThumbnailRef}
+                  _focus={{
+                    transform: "scale(0.95)",
+                    outlineColor: "blue.600",
+                    outlineStyle: "solid",
+                    outlineWidth: "2px",
+                    outlineOffset: "5px",
+                  }}
+                  _active={{
+                    transform: "scale(0.98)",
+                  }}
+                  _hover={{
+                    transform: "scale(1.02)",
+                    boxShadow:
+                      "0px 10px 10px -5px rgba(0, 0, 0, 0.04),\
                       0px 20px 25px -5px rgba(0, 0, 0, 0.1)",
-                    }}
-                  >
-                    {index === results!.length - 7 && (
-                      <IntersectionObservable onVisible={loadMore} />
-                    )}
+                  }}
+                >
+                  {index === results!.length - 7 && (
+                    <IntersectionObservable onVisible={loadMore} />
+                  )}
 
-                    <Thumbnail
-                      imageUrl={imageData.urls.small}
-                      blurhash={imageData.blur_hash}
-                      altDescription={imageData.alt_description}
-                      height={300}
-                      width="100%"
-                    />
-                  </ChakraLink>
-                </Link>
-              ))}
-            </>
-          </ThumbnailGrid>
-        )}
+                  <Thumbnail
+                    imageUrl={imageData.urls.small}
+                    blurhash={imageData.blur_hash}
+                    altDescription={imageData.alt_description}
+                    height={300}
+                    width="100%"
+                  />
+                </ChakraLink>
+              </Link>
+            ))}
+          </>
+        </ThumbnailGrid>
+      )}
 
-      {pageStatus === PageStatus.loading && (
+      {renderLoading && (
         <Fade>
           <Box
             w="100%"
@@ -329,7 +313,7 @@ const Home: NextPage<{ initialCollection?: ImageData[] }> = ({
         </Fade>
       )}
 
-      {pageStatus === PageStatus.error && (
+      {renderError && (
         <Fade>
           <Box
             w="100%"
