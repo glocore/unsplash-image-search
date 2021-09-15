@@ -13,5 +13,6 @@ module.exports = withPWA({
   pwa: {
     dest: "public",
     runtimeCaching,
+    reloadOnOnline: false,
   },
 });

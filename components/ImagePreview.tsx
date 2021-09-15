@@ -9,11 +9,12 @@ import {
   FiGithub,
   FiTwitter,
   FiUser,
+  FiWifiOff,
 } from "react-icons/fi";
 import { ImageData } from "../unsplash";
 import { darken, lighten } from "../utils";
 
-export const ImagePreview = ({ imageData }: ImagePreviewProps) => {
+export const ImagePreview = ({ imageData, offline }: ImagePreviewProps) => {
   const [imageLoaded, setImageLoaded] = useState(false);
 
   let aspectRatioPercentage = 100;
@@ -43,6 +44,22 @@ export const ImagePreview = ({ imageData }: ImagePreviewProps) => {
               w="100%"
               pt={`min(80vh, ${aspectRatioPercentage}%)`}
             >
+              <Box
+                pos="absolute"
+                h="100%"
+                top={0}
+                right={0}
+                bottom={0}
+                left={0}
+                display="flex"
+                justifyContent="center"
+                alignItems="center"
+                opacity={offline ? 1 : 0}
+                fontSize="10rem"
+                color="gray.300"
+              >
+                <FiWifiOff />
+              </Box>
               <Box
                 pos="absolute"
                 top={0}
@@ -150,4 +167,5 @@ export const ImagePreview = ({ imageData }: ImagePreviewProps) => {
 
 export type ImagePreviewProps = {
   imageData: ImageData;
+  offline: boolean;
 };

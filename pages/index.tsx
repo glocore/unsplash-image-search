@@ -9,6 +9,7 @@ import {
   ModalHeader,
   ModalOverlay,
   Text,
+  useToast,
 } from "@chakra-ui/react";
 import type { NextPage } from "next";
 import Link from "next/link";
@@ -120,12 +121,49 @@ const Home: NextPage<{ initialCollection?: ImageData[] }> = ({
     setSearchParams(newValue);
   };
 
+  const [isOffline, setIsOffline] = useState(false);
+  const toast = useToast();
+
+  useEffect(() => {
+    const networkToastId = "networkToastId";
+
+    const handleGoingOffline = () => {
+      setIsOffline(true);
+      if (!toast.isActive(networkToastId)) {
+        toast({
+          id: networkToastId,
+          title: "Offline",
+          description: "Please check your network connection.",
+          duration: null,
+          isClosable: false,
+          status: "warning",
+          variant: "left-accent",
+        });
+      }
+    };
+
+    const handleGoingOnline = () => {
+      setIsOffline(false);
+      toast.close(networkToastId);
+    };
+
+    window.addEventListener("offline", handleGoingOffline);
+    window.addEventListener("online", handleGoingOnline);
+
+    return () => {
+      window.removeEventListener("offline", handleGoingOffline);
+      window.removeEventListener("online", handleGoingOnline);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   return (
     <>
       <Header>
         <SearchPanel
           searchParams={searchParams}
           onChange={handleSearchParamsChange}
+          disabled={isOffline}
         />
       </Header>
       {pageStatus === PageStatus.noResultsFound && <NoResultsFound />}
@@ -255,7 +293,7 @@ const Home: NextPage<{ initialCollection?: ImageData[] }> = ({
             </Box>
           </ModalHeader>
           <ModalBody pl={0} pr={0} pt={0} h="100%">
-            <ImagePreview imageData={selectedImageData!} />
+            <ImagePreview imageData={selectedImageData!} offline={isOffline} />
           </ModalBody>
         </ModalContent>
       </Modal>

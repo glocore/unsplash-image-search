@@ -57,7 +57,11 @@ const orientationLabel = {
   [Orientation.squarish]: "Square",
 };
 
-export const SearchPanel = ({ searchParams, onChange }: SearchPanelProps) => {
+export const SearchPanel = ({
+  searchParams,
+  disabled,
+  onChange,
+}: SearchPanelProps) => {
   const [isFiltersPanelVisible, setIsFiltersPanelVisible] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
 
@@ -151,6 +155,7 @@ export const SearchPanel = ({ searchParams, onChange }: SearchPanelProps) => {
           aria-label="Search Images"
           ref={searchInputRef}
           value={searchQuery}
+          disabled={disabled}
           onChange={handleSearchQueryChange}
           onFocus={handleSearchInputFocus}
           onBlur={handleSearchInputBlur}
@@ -171,6 +176,7 @@ export const SearchPanel = ({ searchParams, onChange }: SearchPanelProps) => {
                   h="2rem"
                   borderRadius="sm"
                   variant="outline"
+                  disabled={disabled}
                   leftIcon={<BiSort />}
                 >
                   {orderLabel[searchParams.order]}
@@ -209,6 +215,7 @@ export const SearchPanel = ({ searchParams, onChange }: SearchPanelProps) => {
                 icon={<FiFilter />}
                 borderRadius="sm"
                 onClick={toggleFiltersPanel}
+                disabled={disabled}
               />
             </Tooltip>
           </HStack>
@@ -298,5 +305,6 @@ export type SearchParams = {
 
 export type SearchPanelProps = {
   searchParams: SearchParams;
+  disabled: boolean;
   onChange: (updaterFn: (oldValue: SearchParams) => SearchParams) => void;
 };
