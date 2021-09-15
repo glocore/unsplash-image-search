@@ -1,51 +1,51 @@
+import { useToast } from "@chakra-ui/react";
 import { isEqual } from "lodash";
 import {
   DependencyList,
   EffectCallback,
-  RefObject,
   useEffect,
   useRef,
   useState,
 } from "react";
 
-interface Args extends IntersectionObserverInit {
-  freezeOnceVisible?: boolean;
-}
-
-export const useIntersectionObserver = (
-  elementRef: RefObject<Element>,
-  {
-    threshold = 0,
-    root = null,
-    rootMargin = "0%",
-    freezeOnceVisible = false,
-  }: Args
-): IntersectionObserverEntry | undefined => {
-  const [entry, setEntry] = useState<IntersectionObserverEntry>();
-
-  const frozen = entry?.isIntersecting && freezeOnceVisible;
-
-  const updateEntry = ([entry]: IntersectionObserverEntry[]): void => {
-    setEntry(entry);
-  };
+export const useNetworkStatus = () => {
+  const [isOffline, setIsOffline] = useState(false);
+  const toast = useToast();
 
   useEffect(() => {
-    const node = elementRef?.current; // DOM Ref
-    const hasIOSupport = !!window.IntersectionObserver;
+    const networkToastId = "networkToastId";
 
-    if (!hasIOSupport || frozen || !node) return;
+    const handleGoingOffline = () => {
+      setIsOffline(true);
+      if (!toast.isActive(networkToastId)) {
+        toast({
+          id: networkToastId,
+          title: "Offline",
+          description: "Please check your network connection.",
+          duration: null,
+          isClosable: false,
+          status: "warning",
+          variant: "left-accent",
+        });
+      }
+    };
 
-    const observerParams = { threshold, root, rootMargin };
-    const observer = new IntersectionObserver(updateEntry, observerParams);
+    const handleGoingOnline = () => {
+      setIsOffline(false);
+      toast.close(networkToastId);
+    };
 
-    observer.observe(node);
+    window.addEventListener("offline", handleGoingOffline);
+    window.addEventListener("online", handleGoingOnline);
 
-    return () => observer.disconnect();
-
+    return () => {
+      window.removeEventListener("offline", handleGoingOffline);
+      window.removeEventListener("online", handleGoingOnline);
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [elementRef, threshold, root, rootMargin, frozen]);
+  }, []);
 
-  return entry;
+  return { isOffline };
 };
 
 /**

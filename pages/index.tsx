@@ -10,7 +10,6 @@ import {
   ModalHeader,
   ModalOverlay,
   Text,
-  useToast,
 } from "@chakra-ui/react";
 import type { NextPage } from "next";
 import Link from "next/link";
@@ -39,6 +38,7 @@ import {
   unsplashApi,
   useUnsplashSearch,
 } from "../unsplash";
+import { useNetworkStatus } from "../utils";
 
 const enum PageStatus {
   /**
@@ -123,45 +123,10 @@ const Home: NextPage<{ initialCollection?: ImageData[] }> = ({
     setSearchParams(newValue);
   };
 
-  const [isOffline, setIsOffline] = useState(false);
-  const toast = useToast();
-
-  useEffect(() => {
-    const networkToastId = "networkToastId";
-
-    const handleGoingOffline = () => {
-      setIsOffline(true);
-      if (!toast.isActive(networkToastId)) {
-        toast({
-          id: networkToastId,
-          title: "Offline",
-          description: "Please check your network connection.",
-          duration: null,
-          isClosable: false,
-          status: "warning",
-          variant: "left-accent",
-        });
-      }
-    };
-
-    const handleGoingOnline = () => {
-      setIsOffline(false);
-      toast.close(networkToastId);
-    };
-
-    window.addEventListener("offline", handleGoingOffline);
-    window.addEventListener("online", handleGoingOnline);
-
-    return () => {
-      window.removeEventListener("offline", handleGoingOffline);
-      window.removeEventListener("online", handleGoingOnline);
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
   const headerRef = useRef<HTMLDivElement>(null);
   const firstThumbnailRef = useRef<HTMLAnchorElement>(null);
 
+  const { isOffline } = useNetworkStatus();
   const { isHeaderFloating } = useHeader();
 
   const renderNoResultsFound = pageStatus === PageStatus.noResultsFound;
