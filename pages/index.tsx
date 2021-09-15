@@ -190,7 +190,7 @@ const Home: NextPage<{ initialCollection?: ImageData[] }> = ({
         left={4}
         top={4}
         bgColor="white"
-        borderColor="cyan.400"
+        borderColor="blue.500"
         borderWidth="2px"
         borderStyle="solid"
         borderRadius={8}
@@ -228,10 +228,28 @@ const Home: NextPage<{ initialCollection?: ImageData[] }> = ({
                 passHref
                 shallow
               >
-                <div
+                <ChakraLink
                   tabIndex={0}
                   onClick={() => setSelectedImageData(imageData)}
                   role="gridcell"
+                  transition="all .2s"
+                  cursor="pointer"
+                  _focus={{
+                    transform: "scale(0.95)",
+                    outlineColor: "blue.600",
+                    outlineStyle: "solid",
+                    outlineWidth: "2px",
+                    outlineOffset: "5px",
+                  }}
+                  _active={{
+                    transform: "scale(0.98)",
+                  }}
+                  _hover={{
+                    transform: "scale(1.02)",
+                    boxShadow:
+                      "0px 10px 10px -5px rgba(0, 0, 0, 0.04),\
+                      0px 20px 25px -5px rgba(0, 0, 0, 0.1)",
+                  }}
                 >
                   <Thumbnail
                     imageUrl={imageData.urls.small}
@@ -240,7 +258,7 @@ const Home: NextPage<{ initialCollection?: ImageData[] }> = ({
                     height={300}
                     width="100%"
                   />
-                </div>
+                </ChakraLink>
               </Link>
             ))}
           </>
