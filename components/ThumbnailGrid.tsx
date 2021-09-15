@@ -10,9 +10,6 @@ export const ThumbnailGrid = ({ children, ...rest }: ThumbnailGridProps) => {
       pr={{ base: 2, md: 8 }}
       pb={100}
       maxW="80em"
-      role="grid"
-      tabIndex={0}
-      id="thumbnail-grid"
       {...rest}
     >
       <SimpleGrid

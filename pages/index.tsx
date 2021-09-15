@@ -180,6 +180,8 @@ const Home: NextPage<{ initialCollection?: ImageData[] }> = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  const firstThumbnailRef = useRef<HTMLAnchorElement>(null);
+
   return (
     <>
       <ChakraLink
@@ -194,7 +196,11 @@ const Home: NextPage<{ initialCollection?: ImageData[] }> = ({
         borderWidth="2px"
         borderStyle="solid"
         borderRadius={8}
-        href="#thumbnail-grid"
+        onKeyPress={(event) => {
+          if (event.key === "Enter") {
+            firstThumbnailRef.current?.focus();
+          }
+        }}
         transition="transform 0.1s"
         zIndex={5}
         _focus={{
@@ -220,7 +226,7 @@ const Home: NextPage<{ initialCollection?: ImageData[] }> = ({
           pt={shouldFloatHeader ? `${headerRef?.current?.clientHeight}px` : 0}
         >
           <>
-            {initialCollection.map((imageData) => (
+            {initialCollection.map((imageData, index) => (
               <Link
                 key={imageData.id}
                 href={`/?id=${imageData.id}`}
@@ -234,6 +240,7 @@ const Home: NextPage<{ initialCollection?: ImageData[] }> = ({
                   role="gridcell"
                   transition="all .2s"
                   cursor="pointer"
+                  ref={index > 0 ? undefined : firstThumbnailRef}
                   _focus={{
                     transform: "scale(0.95)",
                     outlineColor: "blue.600",
@@ -279,7 +286,30 @@ const Home: NextPage<{ initialCollection?: ImageData[] }> = ({
                   passHref
                   shallow
                 >
-                  <div onClick={() => setSelectedImageData(imageData)}>
+                  <ChakraLink
+                    tabIndex={0}
+                    onClick={() => setSelectedImageData(imageData)}
+                    role="gridcell"
+                    transition="all .2s"
+                    cursor="pointer"
+                    ref={index > 0 ? undefined : firstThumbnailRef}
+                    _focus={{
+                      transform: "scale(0.95)",
+                      outlineColor: "blue.600",
+                      outlineStyle: "solid",
+                      outlineWidth: "2px",
+                      outlineOffset: "5px",
+                    }}
+                    _active={{
+                      transform: "scale(0.98)",
+                    }}
+                    _hover={{
+                      transform: "scale(1.02)",
+                      boxShadow:
+                        "0px 10px 10px -5px rgba(0, 0, 0, 0.04),\
+                      0px 20px 25px -5px rgba(0, 0, 0, 0.1)",
+                    }}
+                  >
                     {index === results!.length - 7 && (
                       <IntersectionObservable onVisible={loadMore} />
                     )}
@@ -291,7 +321,7 @@ const Home: NextPage<{ initialCollection?: ImageData[] }> = ({
                       height={300}
                       width="100%"
                     />
-                  </div>
+                  </ChakraLink>
                 </Link>
               ))}
             </>
