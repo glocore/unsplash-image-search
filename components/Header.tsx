@@ -2,7 +2,15 @@ import { Box, Stack } from "@chakra-ui/layout";
 
 export const Header = (props: HeaderProps) => {
   return (
-    <Box pos="fixed" top={0} width="100%" zIndex={1} pt={2} pb={2} bg="white">
+    <Box
+      pos="fixed"
+      top={0}
+      width="100%"
+      zIndex={1}
+      pt={{ base: 2, md: 5 }}
+      pb={{ base: 2, md: 5 }}
+      bg="white"
+    >
       <Stack
         maxW="80rem"
         mr="auto"
