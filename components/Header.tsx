@@ -4,6 +4,7 @@ import { forwardRef } from "@chakra-ui/system";
 export const Header = forwardRef(({ children, ...rest }: HeaderProps, ref) => {
   return (
     <Box
+      as="header"
       top={0}
       width="100%"
       zIndex={1}

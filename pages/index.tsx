@@ -2,6 +2,7 @@ import { Box } from "@chakra-ui/layout";
 import { CircularProgress } from "@chakra-ui/progress";
 import {
   IconButton,
+  Link as ChakraLink,
   Modal,
   ModalBody,
   ModalCloseButton,
@@ -181,6 +182,27 @@ const Home: NextPage<{ initialCollection?: ImageData[] }> = ({
 
   return (
     <>
+      <ChakraLink
+        tabIndex={0}
+        position="absolute"
+        transform="translateY(-150%)"
+        p={4}
+        left={4}
+        top={4}
+        bgColor="white"
+        borderColor="cyan.400"
+        borderWidth="2px"
+        borderStyle="solid"
+        borderRadius={8}
+        href="#thumbnail-grid"
+        transition="transform 0.1s"
+        zIndex={5}
+        _focus={{
+          transform: `translateY(0%)`,
+        }}
+      >
+        Skip to content
+      </ChakraLink>
       <Header
         pos={shouldFloatHeader ? "fixed" : "initial"}
         shadow={shouldFloatHeader ? "md" : undefined}
@@ -193,7 +215,6 @@ const Home: NextPage<{ initialCollection?: ImageData[] }> = ({
         />
       </Header>
       {pageStatus === PageStatus.noResultsFound && <NoResultsFound />}
-
       {pageStatus === PageStatus.initial && (
         <ThumbnailGrid
           pt={shouldFloatHeader ? `${headerRef?.current?.clientHeight}px` : 0}
@@ -207,7 +228,11 @@ const Home: NextPage<{ initialCollection?: ImageData[] }> = ({
                 passHref
                 shallow
               >
-                <div onClick={() => setSelectedImageData(imageData)}>
+                <div
+                  tabIndex={0}
+                  onClick={() => setSelectedImageData(imageData)}
+                  role="gridcell"
+                >
                   <Thumbnail
                     imageUrl={imageData.urls.small}
                     blurhash={imageData.blur_hash}
