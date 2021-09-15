@@ -8,8 +8,6 @@ export const IntersectionObservable = ({
   const entry = useIntersectionObserver(ref, { freezeOnceVisible: true });
   const isVisible = !!entry?.isIntersecting;
 
-  console.log(`Render IntersectionObservable isVisible: `, { isVisible });
-
   useEffect(() => {
     if (isVisible) {
       onVisible();

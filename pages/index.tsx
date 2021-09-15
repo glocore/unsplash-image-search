@@ -179,8 +179,6 @@ const Home: NextPage<{ initialCollection?: ImageData[] }> = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  console.log("rendering");
-
   return (
     <>
       <Header

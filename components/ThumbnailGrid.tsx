@@ -2,7 +2,6 @@ import { Box, BoxProps, SimpleGrid } from "@chakra-ui/react";
 import React, { ReactChild } from "react";
 
 export const ThumbnailGrid = ({ children, ...rest }: ThumbnailGridProps) => {
-  console.log(rest);
   return (
     <Box
       mr="auto"
