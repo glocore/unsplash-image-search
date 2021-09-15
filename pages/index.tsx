@@ -14,7 +14,7 @@ import {
 import type { NextPage } from "next";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { FiX } from "react-icons/fi";
 import { IoRefreshOutline } from "react-icons/io5";
 import { Fade } from "../components/Fade";
@@ -157,9 +157,37 @@ const Home: NextPage<{ initialCollection?: ImageData[] }> = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  const headerRef = useRef<HTMLDivElement>(null);
+  const [shouldFloatHeader, setShouldFloatHeader] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.pageYOffset > 0) {
+        if (shouldFloatHeader) {
+          // do nothing
+        } else {
+          setShouldFloatHeader(true);
+        }
+      } else {
+        setShouldFloatHeader(false);
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll);
+
+    return () => window.removeEventListener("scroll", handleScroll);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  console.log("rendering");
+
   return (
     <>
-      <Header>
+      <Header
+        pos={shouldFloatHeader ? "fixed" : "initial"}
+        shadow={shouldFloatHeader ? "md" : undefined}
+        ref={headerRef}
+      >
         <SearchPanel
           searchParams={searchParams}
           onChange={handleSearchParamsChange}
@@ -169,7 +197,9 @@ const Home: NextPage<{ initialCollection?: ImageData[] }> = ({
       {pageStatus === PageStatus.noResultsFound && <NoResultsFound />}
 
       {pageStatus === PageStatus.initial && (
-        <ThumbnailGrid>
+        <ThumbnailGrid
+          pt={shouldFloatHeader ? `${headerRef?.current?.clientHeight}px` : 0}
+        >
           <>
             {initialCollection.map((imageData) => (
               <Link
@@ -196,7 +226,9 @@ const Home: NextPage<{ initialCollection?: ImageData[] }> = ({
 
       {pageStatus !== PageStatus.initial &&
         pageStatus !== PageStatus.noResultsFound && (
-          <ThumbnailGrid>
+          <ThumbnailGrid
+            pt={shouldFloatHeader ? `${headerRef?.current?.clientHeight}px` : 0}
+          >
             <>
               {results?.map((imageData, index) => (
                 <Link

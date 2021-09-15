@@ -1,15 +1,17 @@
-import { Box, Stack } from "@chakra-ui/layout";
+import { Box, BoxProps, Stack } from "@chakra-ui/layout";
+import { forwardRef } from "@chakra-ui/system";
 
-export const Header = (props: HeaderProps) => {
+export const Header = forwardRef(({ children, ...rest }: HeaderProps, ref) => {
   return (
     <Box
-      pos="fixed"
       top={0}
       width="100%"
       zIndex={1}
       pt={{ base: 2, md: 5 }}
       pb={{ base: 2, md: 5 }}
       bg="white"
+      ref={ref}
+      {...rest}
     >
       <Stack
         maxW="80rem"
@@ -18,12 +20,12 @@ export const Header = (props: HeaderProps) => {
         pl={{ base: 2, md: 8 }}
         pr={{ base: 2, md: 8 }}
       >
-        {props.children}
+        {children}
       </Stack>
     </Box>
   );
-};
+});
 
-export type HeaderProps = {
+export type HeaderProps = BoxProps & {
   children: React.ReactChild;
 };
