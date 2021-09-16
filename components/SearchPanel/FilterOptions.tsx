@@ -71,8 +71,14 @@ export const FilterOptions = ({
         <Wrap spacing={8}>
           <WrapItem>
             <HStack>
-              <label>Colors</label>
-              <ColorFilter value={value.color} onChange={handleColorChange} />
+              <label style={{ color: disabled ? "#AAA" : undefined }}>
+                Colors
+              </label>
+              <ColorFilter
+                value={value.color}
+                onChange={handleColorChange}
+                disabled={disabled}
+              />
             </HStack>
           </WrapItem>
 
@@ -86,12 +92,13 @@ export const FilterOptions = ({
                 openDelay={400}
               >
                 <MenuButton
-                  id="orientation-1"
+                  id="orientation"
                   as={Button}
                   borderRadius="sm"
                   variant="outline"
                   rightIcon={<FiChevronDown />}
                   minWidth="176px"
+                  disabled={disabled}
                 >
                   {orientationLabel[value.orientation]}
                 </MenuButton>

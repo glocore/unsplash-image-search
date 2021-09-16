@@ -57,13 +57,9 @@ export const SearchPanel = ({
     window.addEventListener("keypress", hotkeyListener);
   };
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  const debouncedSearchQueryUpdate = useCallback(
-    debounce(
-      (newValue) => onChange((oldValue) => ({ ...oldValue, query: newValue })),
-      300
-    ),
-    []
+  const debouncedSearchQueryUpdate = debounce(
+    (newValue) => onChange((oldValue) => ({ ...oldValue, query: newValue })),
+    300
   );
 
   const handleSearchQueryChange: ChangeEventHandler<HTMLInputElement> = (
@@ -86,6 +82,8 @@ export const SearchPanel = ({
     });
     onChange((oldValue) => ({ ...oldValue, ...newValue }));
   };
+
+  const isSearchTermTooShort = searchQuery.length < 3;
 
   return (
     <>
@@ -113,19 +111,19 @@ export const SearchPanel = ({
           <HStack alignItems="center">
             <SortOrder
               value={searchParams.order}
-              disabled={disabled}
+              disabled={disabled || isSearchTermTooShort}
               onChange={handleOrderChange}
             />
             <ToggleFilters
               isOpen={isFiltersPanelOpen}
-              disabled={disabled}
+              disabled={disabled || isSearchTermTooShort}
               onClick={toggleFiltersPanel}
             />
           </HStack>
         </InputRightElement>
       </InputGroup>
       <FilterOptions
-        disabled={disabled}
+        disabled={disabled || isSearchTermTooShort}
         isOpen={isFiltersPanelOpen}
         value={{
           color: searchParams.color,

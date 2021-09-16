@@ -38,7 +38,7 @@ const RadioCard = (props: UseRadioProps & { children: ReactChild }) => {
       <Box
         as="label"
         onFocus={() => setIsFocused(true)}
-        onMouseOver={() => setIsFocused(true)}
+        onMouseOver={() => setIsFocused(!props.isDisabled)}
         onBlur={() => setIsFocused(false)}
         onMouseLeave={() => setIsFocused(false)}
       >
@@ -46,7 +46,7 @@ const RadioCard = (props: UseRadioProps & { children: ReactChild }) => {
           <input {...input} />
           <Box
             {...checkbox}
-            cursor="pointer"
+            cursor={props.isDisabled ? "not-allowed" : "pointer"}
             borderWidth="3px"
             borderRadius="50%"
             w={10}
@@ -56,6 +56,7 @@ const RadioCard = (props: UseRadioProps & { children: ReactChild }) => {
             justifyContent="center"
             _checked={{
               borderColor: "teal.600",
+              _disabled: { borderColor: "gray.400" },
             }}
             _focus={{
               boxShadow: "outline",
@@ -81,7 +82,11 @@ const RadioCard = (props: UseRadioProps & { children: ReactChild }) => {
   );
 };
 
-export const ColorFilter = ({ value, onChange }: ColorFilterProps) => {
+export const ColorFilter = ({
+  value,
+  disabled,
+  onChange,
+}: ColorFilterProps) => {
   const { getRootProps, getRadioProps } = useRadioGroup({
     name: "color",
     defaultValue: options[0],
@@ -96,7 +101,7 @@ export const ColorFilter = ({ value, onChange }: ColorFilterProps) => {
       {options.map((value) => {
         const radio = getRadioProps({ value });
         return (
-          <RadioCard key={value} {...radio}>
+          <RadioCard key={value} isDisabled={disabled} {...radio}>
             {value}
           </RadioCard>
         );
@@ -107,5 +112,6 @@ export const ColorFilter = ({ value, onChange }: ColorFilterProps) => {
 
 export type ColorFilterProps = {
   value: Color;
+  disabled: boolean;
   onChange: (newValue: Color) => void;
 };

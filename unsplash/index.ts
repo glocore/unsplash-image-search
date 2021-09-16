@@ -105,7 +105,7 @@ export const useSearch = (
       const reqParams: Record<string, string | number> = {
         query: query.trim(),
         per_page: pageSize,
-        order,
+        order_by: order,
         page,
       };
 
