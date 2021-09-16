@@ -83,7 +83,7 @@ const RadioCard = (props: UseRadioProps & { children: ReactChild }) => {
 
 export const ColorFilter = ({ value, onChange }: ColorFilterProps) => {
   const { getRootProps, getRadioProps } = useRadioGroup({
-    name: "framework",
+    name: "color",
     defaultValue: options[0],
     onChange: (newValue) => onChange(newValue as Color),
     value,
