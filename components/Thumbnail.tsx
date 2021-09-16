@@ -11,17 +11,20 @@ import { Blurhash } from "react-blurhash";
 
 export const Thumbnail = (props: ThumbnailProps) => {
   const [loaded, setLoaded] = useState(false);
+  const { blurhash } = props;
 
   return (
     <Box pos="relative" w={props.width} h={props.height}>
-      <Blurhash
-        hash={props.blurhash}
-        width="100%"
-        height="100%"
-        style={{
-          position: "absolute",
-        }}
-      />
+      {typeof blurhash === "string" && blurhash.length > 5 && (
+        <Blurhash
+          hash={props.blurhash!}
+          width="100%"
+          height="100%"
+          style={{
+            position: "absolute",
+          }}
+        />
+      )}
       <Image
         src={props.imageUrl}
         alt={props.altDescription}
@@ -39,7 +42,7 @@ export const Thumbnail = (props: ThumbnailProps) => {
 };
 
 export type ThumbnailProps = {
-  blurhash: string;
+  blurhash?: string;
   imageUrl: string;
   width: string | number;
   height: string | number;
