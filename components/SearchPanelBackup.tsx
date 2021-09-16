@@ -308,3 +308,10 @@ export type SearchPanelProps = {
   disabled: boolean;
   onChange: (updaterFn: (oldValue: SearchParams) => SearchParams) => void;
 };
+
+export const enum SearchStatus {
+  idle,
+  loading,
+  error,
+  noResults,
+}

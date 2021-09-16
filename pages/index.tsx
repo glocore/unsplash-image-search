@@ -24,11 +24,11 @@ import { IntersectionObservable } from "../components/IntersectionObservable";
 import { NoResultsFound } from "../components/NoResultsFound";
 import {
   Color,
-  Order,
   Orientation,
   SearchPanel,
   SearchParams,
 } from "../components/SearchPanel";
+import { Order } from "../components/SearchPanel/SortOrder";
 import { SkipToContent } from "../components/SkipToContent";
 import { Thumbnail } from "../components/Thumbnail";
 import { ThumbnailGrid } from "../components/ThumbnailGrid";
@@ -75,8 +75,12 @@ const Home: NextPage<{ initialCollection?: ImageData[] }> = ({
   });
   const [pageStatus, setPageStatus] = useState<PageStatus>(PageStatus.initial);
 
-  const router = useRouter();
+  const headerRef = useRef<HTMLDivElement>(null);
+  const firstThumbnailRef = useRef<HTMLAnchorElement>(null);
 
+  const router = useRouter();
+  const { isOffline } = useNetworkStatus();
+  const { isHeaderFloating } = useHeader();
   const {
     status: searchStatus,
     results,
@@ -122,12 +126,6 @@ const Home: NextPage<{ initialCollection?: ImageData[] }> = ({
     const newValue = updaterFn(searchParams);
     setSearchParams(newValue);
   };
-
-  const headerRef = useRef<HTMLDivElement>(null);
-  const firstThumbnailRef = useRef<HTMLAnchorElement>(null);
-
-  const { isOffline } = useNetworkStatus();
-  const { isHeaderFloating } = useHeader();
 
   const renderNoResultsFound = pageStatus === PageStatus.noResultsFound;
   const renderInitialCollection = pageStatus === PageStatus.initial;
