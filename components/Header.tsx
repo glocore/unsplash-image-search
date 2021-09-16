@@ -1,6 +1,6 @@
 import { Box, BoxProps, Stack } from "@chakra-ui/layout";
 import { forwardRef } from "@chakra-ui/system";
-import { useEffect, useState } from "react";
+import { PropsWithChildren, useEffect, useState } from "react";
 
 export const Header = forwardRef(({ children, float }: HeaderProps, ref) => {
   return (
@@ -29,10 +29,10 @@ export const Header = forwardRef(({ children, float }: HeaderProps, ref) => {
   );
 });
 
-export type HeaderProps = BoxProps & {
-  children: React.ReactChild;
-  float: boolean;
-};
+export type HeaderProps = BoxProps &
+  PropsWithChildren<{
+    float: boolean;
+  }>;
 
 export const useHeader = () => {
   const [isHeaderFloating, setIsHeaderFloating] = useState(false);

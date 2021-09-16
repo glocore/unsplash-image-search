@@ -1,5 +1,12 @@
-import { Box, Image } from "@chakra-ui/react";
-import { useState } from "react";
+import {
+  Box,
+  forwardRef,
+  Image,
+  Link as ChakraLink,
+  LinkProps,
+} from "@chakra-ui/react";
+import NextLink from "next/link";
+import React, { PropsWithChildren, useState } from "react";
 import { Blurhash } from "react-blurhash";
 
 export const Thumbnail = (props: ThumbnailProps) => {
@@ -37,4 +44,43 @@ export type ThumbnailProps = {
   width: string | number;
   height: string | number;
   altDescription: string;
+};
+
+export const ThumbnailLink = forwardRef<ThumbnailLinkProps, typeof ChakraLink>(
+  ({ children, id, ...rest }, ref) => {
+    return (
+      <NextLink href={`/?id=${id}`} as={`/images/${id}`} passHref shallow>
+        <ChakraLink
+          ref={ref}
+          tabIndex={0}
+          role="gridcell"
+          transition="all .2s"
+          cursor="pointer"
+          _focus={{
+            transform: "scale(0.95)",
+            outlineColor: "blue.600",
+            outlineStyle: "solid",
+            outlineWidth: "2px",
+            outlineOffset: "5px",
+          }}
+          _active={{
+            transform: "scale(0.98)",
+          }}
+          _hover={{
+            transform: "scale(1.02)",
+            boxShadow:
+              "0px 10px 10px -5px rgba(0, 0, 0, 0.04), \
+              0px 20px 25px -5px rgba(0, 0, 0, 0.1)",
+          }}
+          {...rest}
+        >
+          {children}
+        </ChakraLink>
+      </NextLink>
+    );
+  }
+);
+
+export type ThumbnailLinkProps = PropsWithChildren<LinkProps> & {
+  id: string;
 };

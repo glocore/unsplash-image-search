@@ -1,5 +1,5 @@
 import { Box, BoxProps, SimpleGrid } from "@chakra-ui/react";
-import React, { ReactChild } from "react";
+import React, { PropsWithChildren } from "react";
 
 export const ThumbnailGrid = ({ children, ...rest }: ThumbnailGridProps) => {
   return (
@@ -23,6 +23,4 @@ export const ThumbnailGrid = ({ children, ...rest }: ThumbnailGridProps) => {
   );
 };
 
-export type ThumbnailGridProps = BoxProps & {
-  children: ReactChild;
-};
+export type ThumbnailGridProps = PropsWithChildren<BoxProps>;

@@ -2,7 +2,6 @@ import { Box } from "@chakra-ui/layout";
 import { CircularProgress } from "@chakra-ui/progress";
 import {
   IconButton,
-  Link as ChakraLink,
   Modal,
   ModalBody,
   ModalCloseButton,
@@ -12,7 +11,6 @@ import {
   Text,
 } from "@chakra-ui/react";
 import type { NextPage } from "next";
-import Link from "next/link";
 import { useRouter } from "next/router";
 import React, { useEffect, useRef, useState } from "react";
 import { FiX } from "react-icons/fi";
@@ -27,7 +25,7 @@ import { Color } from "../components/SearchPanel/ColorFilter";
 import { Orientation } from "../components/SearchPanel/FilterOptions";
 import { Order } from "../components/SearchPanel/SortOrder";
 import { SkipToContent } from "../components/SkipToContent";
-import { Thumbnail } from "../components/Thumbnail";
+import { Thumbnail, ThumbnailLink } from "../components/Thumbnail";
 import { ThumbnailGrid } from "../components/ThumbnailGrid";
 import {
   ImageData,
@@ -156,50 +154,22 @@ const Home: NextPage<{ initialCollection?: ImageData[] }> = ({
         <ThumbnailGrid
           pt={isHeaderFloating ? `${headerRef?.current?.clientHeight}px` : 0}
         >
-          <>
-            {initialCollection.map((imageData, index) => (
-              <Link
-                key={imageData.id}
-                href={`/?id=${imageData.id}`}
-                as={`/images/${imageData.id}`}
-                passHref
-                shallow
-              >
-                <ChakraLink
-                  tabIndex={0}
-                  onClick={() => setSelectedImageData(imageData)}
-                  role="gridcell"
-                  transition="all .2s"
-                  cursor="pointer"
-                  ref={index > 0 ? undefined : firstThumbnailRef}
-                  _focus={{
-                    transform: "scale(0.95)",
-                    outlineColor: "blue.600",
-                    outlineStyle: "solid",
-                    outlineWidth: "2px",
-                    outlineOffset: "5px",
-                  }}
-                  _active={{
-                    transform: "scale(0.98)",
-                  }}
-                  _hover={{
-                    transform: "scale(1.02)",
-                    boxShadow:
-                      "0px 10px 10px -5px rgba(0, 0, 0, 0.04),\
-                      0px 20px 25px -5px rgba(0, 0, 0, 0.1)",
-                  }}
-                >
-                  <Thumbnail
-                    imageUrl={imageData.urls.small}
-                    blurhash={imageData.blur_hash}
-                    altDescription={imageData.alt_description}
-                    height={300}
-                    width="100%"
-                  />
-                </ChakraLink>
-              </Link>
-            ))}
-          </>
+          {initialCollection.map((imageData, index) => (
+            <ThumbnailLink
+              key={imageData.id}
+              onClick={() => setSelectedImageData(imageData)}
+              ref={index > 0 ? undefined : firstThumbnailRef}
+              id={imageData.id}
+            >
+              <Thumbnail
+                imageUrl={imageData.urls.small}
+                blurhash={imageData.blur_hash}
+                altDescription={imageData.alt_description}
+                height={300}
+                width="100%"
+              />
+            </ThumbnailLink>
+          ))}
         </ThumbnailGrid>
       )}
 
@@ -207,54 +177,26 @@ const Home: NextPage<{ initialCollection?: ImageData[] }> = ({
         <ThumbnailGrid
           pt={isHeaderFloating ? `${headerRef?.current?.clientHeight}px` : 0}
         >
-          <>
-            {results?.map((imageData, index) => (
-              <Link
-                key={imageData.id}
-                href={`/?id=${imageData.id}`}
-                as={`/images/${imageData.id}`}
-                passHref
-                shallow
-              >
-                <ChakraLink
-                  tabIndex={0}
-                  onClick={() => setSelectedImageData(imageData)}
-                  role="gridcell"
-                  transition="all .2s"
-                  cursor="pointer"
-                  ref={index > 0 ? undefined : firstThumbnailRef}
-                  _focus={{
-                    transform: "scale(0.95)",
-                    outlineColor: "blue.600",
-                    outlineStyle: "solid",
-                    outlineWidth: "2px",
-                    outlineOffset: "5px",
-                  }}
-                  _active={{
-                    transform: "scale(0.98)",
-                  }}
-                  _hover={{
-                    transform: "scale(1.02)",
-                    boxShadow:
-                      "0px 10px 10px -5px rgba(0, 0, 0, 0.04),\
-                      0px 20px 25px -5px rgba(0, 0, 0, 0.1)",
-                  }}
-                >
-                  {index === results!.length - 7 && (
-                    <IntersectionObservable onVisible={loadMore} />
-                  )}
+          {results?.map((imageData, index) => (
+            <ThumbnailLink
+              key={imageData.id}
+              onClick={() => setSelectedImageData(imageData)}
+              ref={index > 0 ? undefined : firstThumbnailRef}
+              id={imageData.id}
+            >
+              {index === results!.length - 7 && (
+                <IntersectionObservable onVisible={loadMore} />
+              )}
 
-                  <Thumbnail
-                    imageUrl={imageData.urls.small}
-                    blurhash={imageData.blur_hash}
-                    altDescription={imageData.alt_description}
-                    height={300}
-                    width="100%"
-                  />
-                </ChakraLink>
-              </Link>
-            ))}
-          </>
+              <Thumbnail
+                imageUrl={imageData.urls.small}
+                blurhash={imageData.blur_hash}
+                altDescription={imageData.alt_description}
+                height={300}
+                width="100%"
+              />
+            </ThumbnailLink>
+          ))}
         </ThumbnailGrid>
       )}
 
