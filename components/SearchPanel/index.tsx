@@ -8,7 +8,7 @@ import {
   Kbd,
   UseMenuOptionGroupProps,
 } from "@chakra-ui/react";
-import { debounce } from "lodash";
+import { debounce } from "lodash-es";
 import React, {
   ChangeEventHandler,
   useCallback,

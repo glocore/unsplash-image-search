@@ -1,5 +1,5 @@
-import { useToast } from "@chakra-ui/react";
-import { isEqual } from "lodash";
+import { useToast } from "@chakra-ui/toast";
+import { isEqual } from "lodash-es";
 import {
   DependencyList,
   EffectCallback,
