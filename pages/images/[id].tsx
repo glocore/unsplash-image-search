@@ -59,7 +59,7 @@ const Image = () => {
       </Box>
       {status === RequestStatus.loading && <Loading />}
       {status === RequestStatus.error && <ErrorUI onRetryClick={retry} />}
-      {status === RequestStatus.idle && imageData && (
+      {status === RequestStatus.completed && imageData && (
         <ImagePreview imageData={imageData} />
       )}
     </Box>

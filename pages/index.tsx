@@ -12,7 +12,7 @@ import {
 } from "@chakra-ui/react";
 import type { NextPage } from "next";
 import { useRouter } from "next/router";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useRef, useState } from "react";
 import { FiX } from "react-icons/fi";
 import { IoRefreshOutline } from "react-icons/io5";
 import { Fade } from "../components/Fade";
@@ -27,36 +27,8 @@ import { Order } from "../components/SearchPanel/SortOrder";
 import { SkipToContent } from "../components/SkipToContent";
 import { Thumbnail, ThumbnailLink } from "../components/Thumbnail";
 import { ThumbnailGrid } from "../components/ThumbnailGrid";
-import {
-  ImageData,
-  RequestStatus,
-  unsplashApi,
-  useUnsplashSearch,
-} from "../unsplash";
+import { ImageData, SearchStatus, unsplashApi, useSearch } from "../unsplash";
 import { useNetworkStatus } from "../utils";
-
-const enum PageStatus {
-  /**
-   * Search yet to be performed / search query was reset.
-   */
-  initial,
-  /**
-   * No more search results.
-   */
-  idle,
-  /**
-   * Loading more search results.
-   */
-  loading,
-  /**
-   * There was an error fetching search results.
-   */
-  error,
-  /**
-   * Search returned no results.
-   */
-  noResultsFound,
-}
 
 const Home: NextPage<{ initialCollection?: ImageData[] }> = ({
   initialCollection = [],
@@ -68,7 +40,6 @@ const Home: NextPage<{ initialCollection?: ImageData[] }> = ({
     order: Order.relevance,
     orientation: Orientation.all,
   });
-  const [pageStatus, setPageStatus] = useState<PageStatus>(PageStatus.initial);
 
   const headerRef = useRef<HTMLDivElement>(null);
   const firstThumbnailRef = useRef<HTMLAnchorElement>(null);
@@ -81,39 +52,13 @@ const Home: NextPage<{ initialCollection?: ImageData[] }> = ({
     results,
     loadMore,
     retry,
-  } = useUnsplashSearch({
-    pageSize: 15,
-    ...searchParams,
-  });
-
-  useEffect(() => {
-    if (searchStatus === RequestStatus.error) {
-      // There was an error in fetching search results
-      setPageStatus(PageStatus.error);
-    } else if (results) {
-      // Search was performed
-
-      if (results.length < 1) {
-        // Search returned no results
-        setPageStatus(PageStatus.noResultsFound);
-      } else {
-        setPageStatus(
-          {
-            [RequestStatus.idle]: PageStatus.idle,
-            [RequestStatus.loading]: PageStatus.loading,
-            [RequestStatus.error]: PageStatus.error,
-          }[searchStatus]
-        );
-      }
-    } else {
-      if (searchStatus === RequestStatus.loading) {
-        setPageStatus(PageStatus.loading);
-      } else {
-        // Search is yet to begin (or) search term was reset
-        setPageStatus(PageStatus.initial);
-      }
-    }
-  }, [initialCollection, results, searchStatus]);
+  } = useSearch(
+    {
+      pageSize: 15,
+      ...searchParams,
+    },
+    initialCollection
+  );
 
   const handleSearchParamsChange = (
     updaterFn: (oldValue: SearchParams) => SearchParams
@@ -122,13 +67,12 @@ const Home: NextPage<{ initialCollection?: ImageData[] }> = ({
     setSearchParams(newValue);
   };
 
-  const renderNoResultsFound = pageStatus === PageStatus.noResultsFound;
-  const renderInitialCollection = pageStatus === PageStatus.initial;
-  const renderLoading = pageStatus === PageStatus.loading;
-  const renderError = pageStatus === PageStatus.error;
-  const renderSearchResults =
-    pageStatus !== PageStatus.initial &&
-    pageStatus !== PageStatus.noResultsFound;
+  const renderNoResultsFound = searchStatus === SearchStatus.noResults;
+  const renderLoading = searchStatus === SearchStatus.loading;
+  const renderError = searchStatus === SearchStatus.error;
+  const renderSearchResults = searchStatus !== SearchStatus.noResults;
+
+  console.log({ results, initialCollection });
 
   return (
     <>
@@ -150,44 +94,20 @@ const Home: NextPage<{ initialCollection?: ImageData[] }> = ({
         />
       </Header>
       {renderNoResultsFound && <NoResultsFound />}
-      {renderInitialCollection && (
-        <ThumbnailGrid
-          pt={isHeaderFloating ? `${headerRef?.current?.clientHeight}px` : 0}
-        >
-          {initialCollection.map((imageData, index) => (
-            <ThumbnailLink
-              key={imageData.id}
-              onClick={() => setSelectedImageData(imageData)}
-              ref={index > 0 ? undefined : firstThumbnailRef}
-              id={imageData.id}
-            >
-              <Thumbnail
-                imageUrl={imageData.urls.small}
-                blurhash={imageData.blur_hash}
-                altDescription={imageData.alt_description}
-                height={300}
-                width="100%"
-              />
-            </ThumbnailLink>
-          ))}
-        </ThumbnailGrid>
-      )}
-
       {renderSearchResults && (
         <ThumbnailGrid
           pt={isHeaderFloating ? `${headerRef?.current?.clientHeight}px` : 0}
         >
-          {results?.map((imageData, index) => (
+          {results.map((imageData, index) => (
             <ThumbnailLink
               key={imageData.id}
               onClick={() => setSelectedImageData(imageData)}
               ref={index > 0 ? undefined : firstThumbnailRef}
               id={imageData.id}
             >
-              {index === results!.length - 7 && (
+              {index === results.length - 7 && (
                 <IntersectionObservable onVisible={loadMore} />
               )}
-
               <Thumbnail
                 imageUrl={imageData.urls.small}
                 blurhash={imageData.blur_hash}
@@ -280,7 +200,7 @@ export default Home;
 
 export async function getStaticProps() {
   const responseJson = await unsplashApi("/collections/2423569/photos", {
-    per_page: "30",
+    per_page: "15",
   });
   return {
     props: {

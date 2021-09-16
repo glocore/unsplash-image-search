@@ -167,5 +167,5 @@ export const ImagePreview = ({ imageData, offline }: ImagePreviewProps) => {
 
 export type ImagePreviewProps = {
   imageData: ImageData;
-  offline: boolean;
+  offline?: boolean;
 };
