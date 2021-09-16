@@ -11,10 +11,7 @@ import {
 import { debounce } from "lodash";
 import React, {
   ChangeEventHandler,
-  createContext,
-  ReactChild,
   useCallback,
-  useContext,
   useEffect,
   useRef,
   useState,
@@ -24,70 +21,18 @@ import { FilterOptions, Orientation } from "./FilterOptions";
 import { Order, SortOrder } from "./SortOrder";
 import { ToggleFilters } from "./ToggleFilters";
 
-export const enum SearchStatus {
-  idle,
-  loading,
-  error,
-  noResults,
-}
-
-const SearchContext = createContext<{
-  results: ImageData[];
-  status: SearchStatus;
-  updateResults: (newValue: ImageData[]) => void;
-  updateStatus: (newValue: SearchStatus) => void;
-}>({
-  results: [],
-  updateResults: () => {},
-  status: SearchStatus.idle,
-  updateStatus: () => {},
-});
-
-export const SearchContextProvider = ({
-  children,
-}: SearchContextProviderProps) => {
-  const [results, setResults] = useState<ImageData[]>([]);
-  const [status, setStatus] = useState<SearchStatus>(SearchStatus.idle);
-
-  const updateResults = (newValue: ImageData[]) => {
-    setResults(newValue);
-  };
-
-  const updateStatus = (newValue: SearchStatus) => {
-    setStatus(newValue);
-  };
-
-  return (
-    <SearchContext.Provider
-      value={{ results, status, updateResults, updateStatus }}
-    >
-      {children}
-    </SearchContext.Provider>
-  );
-};
-
-export type SearchContextProviderProps = {
-  children: ReactChild;
-};
-
-export const useSearch = () => {
-  return useContext(SearchContext);
-};
-
-export { Color };
-
 export const SearchPanel = ({
   searchParams,
   disabled,
   onChange,
 }: SearchPanelProps) => {
-  const [isFiltersPanelVisible, setIsFiltersPanelVisible] = useState(false);
+  const [isFiltersPanelOpen, setIsFiltersPanelOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
 
   const searchInputRef = useRef<HTMLInputElement>(null);
 
   const toggleFiltersPanel = () => {
-    setIsFiltersPanelVisible(!isFiltersPanelVisible);
+    setIsFiltersPanelOpen(!isFiltersPanelOpen);
   };
 
   const hotkeyListener = useCallback((e: KeyboardEvent) => {
@@ -172,7 +117,7 @@ export const SearchPanel = ({
               onChange={handleOrderChange}
             />
             <ToggleFilters
-              isOpen={isFiltersPanelVisible}
+              isOpen={isFiltersPanelOpen}
               disabled={disabled}
               onClick={toggleFiltersPanel}
             />
@@ -181,7 +126,7 @@ export const SearchPanel = ({
       </InputGroup>
       <FilterOptions
         disabled={disabled}
-        isOpen={isFiltersPanelVisible}
+        isOpen={isFiltersPanelOpen}
         value={{
           color: searchParams.color,
           orientation: searchParams.orientation,
