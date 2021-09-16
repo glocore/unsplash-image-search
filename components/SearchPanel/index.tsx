@@ -1,22 +1,12 @@
 import {
   Box,
-  Button,
-  Collapse,
   HStack,
   Input,
   InputGroup,
   InputLeftElement,
   InputRightElement,
   Kbd,
-  Menu,
-  MenuButton,
-  MenuItemOption,
-  MenuList,
-  MenuOptionGroup,
-  Tooltip,
   UseMenuOptionGroupProps,
-  Wrap,
-  WrapItem,
 } from "@chakra-ui/react";
 import { debounce } from "lodash";
 import React, {
@@ -29,8 +19,8 @@ import React, {
   useRef,
   useState,
 } from "react";
-import { FiChevronDown, FiX } from "react-icons/fi";
-import { Color, ColorFilter } from "../ColorFilter";
+import { Color } from "./ColorFilter";
+import { FilterOptions, Orientation } from "./FilterOptions";
 import { Order, SortOrder } from "./SortOrder";
 import { ToggleFilters } from "./ToggleFilters";
 
@@ -84,21 +74,7 @@ export const useSearch = () => {
   return useContext(SearchContext);
 };
 
-export const enum Orientation {
-  all = "all",
-  landscape = "landscape",
-  portrait = "portrait",
-  squarish = "squarish",
-}
-
 export { Color };
-
-const orientationLabel = {
-  [Orientation.all]: "Any Orientation",
-  [Orientation.landscape]: "Landscape",
-  [Orientation.portrait]: "Portrait",
-  [Orientation.squarish]: "Square",
-};
 
 export const SearchPanel = ({
   searchParams,
@@ -156,30 +132,15 @@ export const SearchPanel = ({
     onChange((oldValue) => ({ ...oldValue, order: newValue as Order }));
   };
 
-  const handleColorChange = (newValue: Color) => {
-    onChange((oldValue) => ({ ...oldValue, color: newValue as Color }));
-  };
-
-  const handleOrientationChange: UseMenuOptionGroupProps["onChange"] = (
-    newValue
+  const handleFiltersChange = (
+    updaterFn: (oldValue: FilterOptions) => FilterOptions
   ) => {
-    onChange((oldValue) => ({
-      ...oldValue,
-      orientation: newValue as Orientation,
-    }));
+    const newValue = updaterFn({
+      color: searchParams.color,
+      orientation: searchParams.orientation,
+    });
+    onChange((oldValue) => ({ ...oldValue, ...newValue }));
   };
-
-  const clearFilters = () => {
-    onChange((oldValue) => ({
-      ...oldValue,
-      color: Color.all,
-      orientation: Orientation.all,
-    }));
-  };
-
-  const filtersAreDefault =
-    searchParams.color === Color.all &&
-    searchParams.orientation === Orientation.all;
 
   return (
     <>
@@ -218,77 +179,15 @@ export const SearchPanel = ({
           </HStack>
         </InputRightElement>
       </InputGroup>
-      <Collapse in={isFiltersPanelVisible} animateOpacity>
-        <Box p={4}>
-          <Wrap spacing={8}>
-            <WrapItem>
-              <HStack>
-                <label>Colors</label>
-                <ColorFilter
-                  value={searchParams.color}
-                  onChange={handleColorChange}
-                />
-              </HStack>
-            </WrapItem>
-
-            <WrapItem>
-              <Menu>
-                <Tooltip
-                  label="Orientation"
-                  placement="bottom"
-                  bg="gray.200"
-                  color="gray.800"
-                  openDelay={400}
-                >
-                  <MenuButton
-                    id="orientation-1"
-                    as={Button}
-                    borderRadius="sm"
-                    variant="outline"
-                    rightIcon={<FiChevronDown />}
-                    minWidth="176px"
-                  >
-                    {orientationLabel[searchParams.orientation]}
-                  </MenuButton>
-                </Tooltip>
-
-                <MenuList minWidth="240px">
-                  <MenuOptionGroup
-                    value={searchParams.orientation}
-                    onChange={handleOrientationChange}
-                    type="radio"
-                  >
-                    <MenuItemOption value={Orientation.all}>
-                      {orientationLabel[Orientation.all]}
-                    </MenuItemOption>
-                    <MenuItemOption value={Orientation.landscape}>
-                      {orientationLabel[Orientation.landscape]}
-                    </MenuItemOption>
-                    <MenuItemOption value={Orientation.portrait}>
-                      {orientationLabel[Orientation.portrait]}
-                    </MenuItemOption>
-                    <MenuItemOption value={Orientation.squarish}>
-                      {orientationLabel[Orientation.squarish]}
-                    </MenuItemOption>
-                  </MenuOptionGroup>
-                </MenuList>
-              </Menu>
-            </WrapItem>
-
-            <WrapItem>
-              <Button
-                onClick={clearFilters}
-                variant="ghost"
-                disabled={filtersAreDefault}
-                color="gray.600"
-                leftIcon={<FiX />}
-              >
-                Clear Filters
-              </Button>
-            </WrapItem>
-          </Wrap>
-        </Box>
-      </Collapse>
+      <FilterOptions
+        disabled={disabled}
+        isOpen={isFiltersPanelVisible}
+        value={{
+          color: searchParams.color,
+          orientation: searchParams.orientation,
+        }}
+        onChange={handleFiltersChange}
+      />
     </>
   );
 };

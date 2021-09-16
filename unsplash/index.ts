@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
-import { Color } from "../components/ColorFilter";
-import { Orientation } from "../components/SearchPanel";
+import { Color } from "../components/SearchPanel/ColorFilter";
+import { Orientation } from "../components/SearchPanel/FilterOptions";
 
 export const enum RequestStatus {
   idle,

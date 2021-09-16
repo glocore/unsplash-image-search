@@ -29,7 +29,7 @@ import {
 } from "react";
 import { BiSort } from "react-icons/bi";
 import { FiChevronDown, FiFilter, FiX } from "react-icons/fi";
-import { Color, ColorFilter } from "./ColorFilter";
+import { Color, ColorFilter } from "./SearchPanel/ColorFilter";
 
 export const enum Order {
   relevance = "relevance",
