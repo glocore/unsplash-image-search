@@ -1,6 +1,13 @@
-import { Button, IconButton } from "@chakra-ui/button";
-import { Box, Divider, Link, Text } from "@chakra-ui/layout";
-import { Image, Tooltip } from "@chakra-ui/react";
+import {
+  Box,
+  Button,
+  Divider,
+  IconButton,
+  Image,
+  Link,
+  Text,
+  Tooltip,
+} from "@chakra-ui/react";
 import { format } from "date-fns";
 import { useState } from "react";
 import {

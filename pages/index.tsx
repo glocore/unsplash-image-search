@@ -1,4 +1,3 @@
-import { Fade } from "@chakra-ui/transition";
 import type { NextPage } from "next";
 import React, { useRef, useState } from "react";
 import {
@@ -110,17 +109,9 @@ const Home: NextPage<{ initialCollection?: ImageData[] }> = ({
         </ThumbnailGrid>
       )}
 
-      {renderLoading && (
-        <Fade>
-          <Loading pt={10} pb="30em" />
-        </Fade>
-      )}
+      {renderLoading && <Loading pt={10} pb="30em" />}
 
-      {renderError && (
-        <Fade>
-          <ErrorNotice onRetryClick={retry} pt={10} pb="30em" />
-        </Fade>
-      )}
+      {renderError && <ErrorNotice onRetryClick={retry} pt={10} pb="30em" />}
 
       <ImagePreviewModal imageData={selectedImageData!} offline={isOffline} />
     </>

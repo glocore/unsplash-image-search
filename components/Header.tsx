@@ -1,5 +1,4 @@
-import { Box, BoxProps, Stack } from "@chakra-ui/layout";
-import { forwardRef } from "@chakra-ui/system";
+import { Box, BoxProps, forwardRef, Stack } from "@chakra-ui/react";
 import { PropsWithChildren, useEffect, useState } from "react";
 
 export const Header = forwardRef(({ children, float }: HeaderProps, ref) => {
