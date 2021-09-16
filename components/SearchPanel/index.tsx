@@ -3,7 +3,6 @@ import {
   Button,
   Collapse,
   HStack,
-  IconButton,
   Input,
   InputGroup,
   InputLeftElement,
@@ -30,9 +29,10 @@ import React, {
   useRef,
   useState,
 } from "react";
-import { FiChevronDown, FiFilter, FiX } from "react-icons/fi";
+import { FiChevronDown, FiX } from "react-icons/fi";
 import { Color, ColorFilter } from "../ColorFilter";
 import { Order, SortOrder } from "./SortOrder";
+import { ToggleFilters } from "./ToggleFilters";
 
 export const enum SearchStatus {
   idle,
@@ -210,26 +210,11 @@ export const SearchPanel = ({
               disabled={disabled}
               onChange={handleOrderChange}
             />
-            <Tooltip
-              label={isFiltersPanelVisible ? "Hide Filters" : "Show Filters"}
-              placement="bottom-start"
-              bg="gray.200"
-              color="gray.800"
-              openDelay={400}
-            >
-              <IconButton
-                variant="outline"
-                aria-label={
-                  isFiltersPanelVisible ? "Hide Filters" : "Show Filters"
-                }
-                h="2rem"
-                mr={-5}
-                icon={<FiFilter />}
-                borderRadius="sm"
-                onClick={toggleFiltersPanel}
-                disabled={disabled}
-              />
-            </Tooltip>
+            <ToggleFilters
+              isOpen={isFiltersPanelVisible}
+              disabled={disabled}
+              onClick={toggleFiltersPanel}
+            />
           </HStack>
         </InputRightElement>
       </InputGroup>
