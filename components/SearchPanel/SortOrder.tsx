@@ -42,6 +42,9 @@ export const SortOrder = ({ value, disabled, onChange }: SortOrderProps) => {
           variant="outline"
           disabled={disabled}
           leftIcon={<BiSort />}
+          name={"Order By"}
+          label={`Order by: ${orderLabel[value]}`}
+          aria-label={`Order by: ${orderLabel[value]}`}
         >
           {shouldShowButtonLabel && orderLabel[value]}
         </MenuButton>
