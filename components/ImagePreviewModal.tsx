@@ -8,12 +8,14 @@ import {
   ModalHeader,
   ModalOverlay,
 } from "@chakra-ui/react";
-import router from "next/router";
+import { useRouter } from "next/router";
 import { FiX } from "react-icons/fi";
 import { ImageData } from "../unsplash";
 import { ImagePreview } from "./ImagePreview";
 
 export const ImagePreviewModal = (props: ImagePreviewModalProps) => {
+  const router = useRouter();
+
   return (
     <Modal
       onClose={() => router.push("/", undefined, { shallow: true })}

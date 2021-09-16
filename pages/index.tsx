@@ -1,14 +1,11 @@
-import { Box } from "@chakra-ui/layout";
-import { CircularProgress } from "@chakra-ui/progress";
-import { IconButton, Text } from "@chakra-ui/react";
+import { Fade } from "@chakra-ui/transition";
 import type { NextPage } from "next";
-import { useRouter } from "next/router";
 import React, { useRef, useState } from "react";
-import { IoRefreshOutline } from "react-icons/io5";
-import { Fade } from "../components/Fade";
+import { ErrorNotice } from "../components/ErrorNotice";
 import { Header, useHeader } from "../components/Header";
 import { ImagePreviewModal } from "../components/ImagePreviewModal";
 import { IntersectionObservable } from "../components/IntersectionObservable";
+import { Loading } from "../components/Loading";
 import { NoResultsFound } from "../components/NoResultsFound";
 import { SearchPanel, SearchParams } from "../components/SearchPanel";
 import { Color } from "../components/SearchPanel/ColorFilter";
@@ -34,7 +31,6 @@ const Home: NextPage<{ initialCollection?: ImageData[] }> = ({
   const headerRef = useRef<HTMLDivElement>(null);
   const firstThumbnailRef = useRef<HTMLAnchorElement>(null);
 
-  const router = useRouter();
   const { isOffline } = useNetworkStatus();
   const { isHeaderFloating } = useHeader();
   const {
@@ -62,8 +58,6 @@ const Home: NextPage<{ initialCollection?: ImageData[] }> = ({
   const renderError = searchStatus === SearchStatus.error;
   const renderSearchResults = searchStatus !== SearchStatus.noResults;
 
-  console.log({ results, initialCollection });
-
   return (
     <>
       <SkipToContent
@@ -83,6 +77,7 @@ const Home: NextPage<{ initialCollection?: ImageData[] }> = ({
           disabled={isOffline}
         />
       </Header>
+
       {renderNoResultsFound && <NoResultsFound />}
       {renderSearchResults && (
         <ThumbnailGrid
@@ -112,40 +107,13 @@ const Home: NextPage<{ initialCollection?: ImageData[] }> = ({
 
       {renderLoading && (
         <Fade>
-          <Box
-            w="100%"
-            pt={10}
-            pb="30em"
-            display="flex"
-            alignItems="center"
-            justifyContent="center"
-          >
-            <CircularProgress isIndeterminate />
-          </Box>
+          <Loading pt={10} pb="30em" />
         </Fade>
       )}
 
       {renderError && (
         <Fade>
-          <Box
-            w="100%"
-            pt={10}
-            pb="30em"
-            display="flex"
-            alignItems="center"
-            justifyContent="center"
-            flexDir="column"
-          >
-            <Text mb={2} fontSize="xl" color="gray.500">
-              Something went wrong, try again?
-            </Text>
-            <IconButton
-              icon={<IoRefreshOutline />}
-              aria-label="Reload"
-              borderRadius="50%"
-              onClick={retry}
-            />
-          </Box>
+          <ErrorNotice onRetryClick={retry} pt={10} pb="30em" />
         </Fade>
       )}
 

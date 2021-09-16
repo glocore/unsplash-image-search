@@ -1,46 +1,12 @@
-import { Button, IconButton } from "@chakra-ui/button";
+import { Button } from "@chakra-ui/button";
 import { Box, Link } from "@chakra-ui/layout";
-import { CircularProgress, Text } from "@chakra-ui/react";
 import { useRouter } from "next/router";
 import React from "react";
 import { FiArrowLeft } from "react-icons/fi";
-import { IoRefreshOutline } from "react-icons/io5";
+import { ErrorNotice } from "../../components/ErrorNotice";
 import { ImagePreview } from "../../components/ImagePreview";
+import { Loading } from "../../components/Loading";
 import { RequestStatus, useUnsplashImage } from "../../unsplash";
-
-const Loading = () => (
-  <Box
-    w="100%"
-    h="80%"
-    display="flex"
-    alignItems="center"
-    justifyContent="center"
-  >
-    <CircularProgress isIndeterminate />
-  </Box>
-);
-
-const ErrorUI = (props: { onRetryClick: any }) => (
-  <Box
-    w="100%"
-    pt={10}
-    pb="30em"
-    display="flex"
-    alignItems="center"
-    justifyContent="center"
-    flexDir="column"
-  >
-    <Text mb={2} fontSize="xl" color="gray.500">
-      Something went wrong, try again?
-    </Text>
-    <IconButton
-      icon={<IoRefreshOutline />}
-      aria-label="Reload"
-      borderRadius="50%"
-      onClick={props.onRetryClick}
-    />
-  </Box>
-);
 
 const Image = () => {
   const router = useRouter();
@@ -57,8 +23,10 @@ const Image = () => {
           Home
         </Button>
       </Box>
-      {status === RequestStatus.loading && <Loading />}
-      {status === RequestStatus.error && <ErrorUI onRetryClick={retry} />}
+      {status === RequestStatus.loading && <Loading h="80%" />}
+      {status === RequestStatus.error && (
+        <ErrorNotice onRetryClick={retry} h="80%" />
+      )}
       {status === RequestStatus.completed && imageData && (
         <ImagePreview imageData={imageData} />
       )}
