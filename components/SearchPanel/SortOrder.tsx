@@ -22,6 +22,9 @@ const orderLabel = {
 };
 
 export const SortOrder = ({ value, disabled, onChange }: SortOrderProps) => {
+  const _window = process.browser ? window : { innerWidth: 0 };
+  const shouldShowButtonLabel = _window.innerWidth > 480;
+
   return (
     <Menu>
       <Tooltip
@@ -40,7 +43,7 @@ export const SortOrder = ({ value, disabled, onChange }: SortOrderProps) => {
           disabled={disabled}
           leftIcon={<BiSort />}
         >
-          {orderLabel[value]}
+          {shouldShowButtonLabel && orderLabel[value]}
         </MenuButton>
       </Tooltip>
 

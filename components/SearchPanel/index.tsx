@@ -83,6 +83,9 @@ export const SearchPanel = ({
     onChange((oldValue) => ({ ...oldValue, ...newValue }));
   };
 
+  const _window = process.browser ? window : { innerWidth: 0 };
+  const isMobile = _window.innerWidth < 480;
+
   const isSearchTermTooShort = searchQuery.length < 3;
 
   return (
@@ -98,7 +101,7 @@ export const SearchPanel = ({
         <Input
           placeholder="Search Images"
           size="lg"
-          pr="200px"
+          pr={isMobile ? "130px" : "200px"}
           aria-label="Search Images"
           ref={searchInputRef}
           value={searchQuery}
