@@ -1,9 +1,9 @@
-import { Link, LinkProps } from "@chakra-ui/react";
-import { ReactChild } from "react";
+import { Button, ButtonProps } from "@chakra-ui/react";
+import { PropsWithChildren } from "react";
 
 export const SkipToContent = ({ children, ...rest }: SkipToContentProps) => {
   return (
-    <Link
+    <Button
       tabIndex={0}
       position="absolute"
       transform="translateY(-150%)"
@@ -23,10 +23,8 @@ export const SkipToContent = ({ children, ...rest }: SkipToContentProps) => {
       {...rest}
     >
       {children}
-    </Link>
+    </Button>
   );
 };
 
-export type SkipToContentProps = LinkProps & {
-  children: ReactChild;
-};
+export type SkipToContentProps = PropsWithChildren<ButtonProps>;

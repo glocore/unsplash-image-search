@@ -56,7 +56,6 @@ export const ThumbnailLink = forwardRef<ThumbnailLinkProps, typeof ChakraLink>(
         <ChakraLink
           ref={ref}
           tabIndex={0}
-          role="gridcell"
           transition="all .2s"
           cursor="pointer"
           _focus={{
