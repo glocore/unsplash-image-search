@@ -1,11 +1,8 @@
-import { Button } from "@chakra-ui/button";
-import { Box, Link } from "@chakra-ui/layout";
+import { Box, Button, Link } from "@chakra-ui/react";
 import { useRouter } from "next/router";
 import React from "react";
 import { FiArrowLeft } from "react-icons/fi";
-import { ErrorNotice } from "../../components/ErrorNotice";
-import { ImagePreview } from "../../components/ImagePreview";
-import { Loading } from "../../components/Loading";
+import { ErrorNotice, ImagePreview, Loading } from "../../components";
 import { RequestStatus, useUnsplashImage } from "../../unsplash";
 
 const Image = () => {

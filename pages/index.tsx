@@ -1,19 +1,24 @@
 import { Fade } from "@chakra-ui/transition";
 import type { NextPage } from "next";
 import React, { useRef, useState } from "react";
-import { ErrorNotice } from "../components/ErrorNotice";
-import { Header, useHeader } from "../components/Header";
-import { ImagePreviewModal } from "../components/ImagePreviewModal";
-import { IntersectionObservable } from "../components/IntersectionObservable";
-import { Loading } from "../components/Loading";
-import { NoResultsFound } from "../components/NoResultsFound";
-import { SearchPanel, SearchParams } from "../components/SearchPanel";
-import { Color } from "../components/SearchPanel/ColorFilter";
-import { Orientation } from "../components/SearchPanel/FilterOptions";
-import { Order } from "../components/SearchPanel/SortOrder";
-import { SkipToContent } from "../components/SkipToContent";
-import { Thumbnail, ThumbnailLink } from "../components/Thumbnail";
-import { ThumbnailGrid } from "../components/ThumbnailGrid";
+import {
+  Color,
+  ErrorNotice,
+  Header,
+  ImagePreviewModal,
+  IntersectionObservable,
+  Loading,
+  NoResultsFound,
+  Order,
+  Orientation,
+  SearchPanel,
+  SearchParams,
+  SkipToContent,
+  Thumbnail,
+  ThumbnailGrid,
+  ThumbnailLink,
+  useHeader,
+} from "../components";
 import { ImageData, SearchStatus, unsplashApi, useSearch } from "../unsplash";
 import { useNetworkStatus } from "../utils";
 
